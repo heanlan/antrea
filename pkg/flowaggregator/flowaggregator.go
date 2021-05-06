@@ -472,16 +472,11 @@ func (fa *flowAggregator) sendTemplateSet(templateSet ipfixentities.Set, isIPv6 
 
 func (fa *flowAggregator) sendDataSet(dataSet ipfixentities.Set) (int, error) {
 	sentBytes, err := fa.exportingProcess.SendSet(dataSet)
-	klog.Info("\n\n\n\n\n\n\n\n\n")
-	for _, record := range dataSet.GetRecords() {
-		for _, ie := range record.GetOrderedElementList() {
-			klog.Info(ie.Element.Name)
-			klog.Info(ie.Value)
-		}
-	}
 	if err != nil {
 		return 0, fmt.Errorf("error when sending data set: %v", err)
 	}
 	klog.V(4).Infof("Data set sent successfully. Bytes sent: %d", sentBytes)
+	klog.Info("\n\n\n\n\n\n")
+	klog.Info(sentBytes)
 	return sentBytes, nil
 }

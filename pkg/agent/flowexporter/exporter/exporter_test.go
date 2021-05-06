@@ -243,6 +243,12 @@ func getElemList(ianaIE []string, antreaIE []string) []*ipfixentities.InfoElemen
 			elemList[i] = ipfixentities.NewInfoElementWithValue(ie.Element, "")
 		case "ingressNetworkPolicyName", "ingressNetworkPolicyNamespace", "egressNetworkPolicyName", "egressNetworkPolicyNamespace":
 			elemList[i] = ipfixentities.NewInfoElementWithValue(ie.Element, "")
+		case "ingressNetworkPolicyUID", "egressNetworkPolicyUID", "ingressNetworkPolicyRuleName", "egressNetworkPolicyRuleName":
+			elemList[i] = ipfixentities.NewInfoElementWithValue(ie.Element, "")
+		case "ingressNetworkPolicyType", "egressNetworkPolicyType":
+			elemList[i] = ipfixentities.NewInfoElementWithValue(ie.Element, uint8(0))
+		case "ingressNetworkPolicyRulePriority", "egressNetworkPolicyRulePriority":
+			elemList[i] = ipfixentities.NewInfoElementWithValue(ie.Element, int32(0))
 		}
 	}
 	return elemList
@@ -258,26 +264,34 @@ func getConnection(isIPv6 bool, isPresent bool, statusFlag uint32, protoID uint8
 		tuple, revTuple = makeTuple(&srcIP, &dstIP, protoID, 65280, 255)
 	}
 	conn := &flowexporter.Connection{
-		StartTime:                     time.Time{},
-		StopTime:                      time.Time{},
-		StatusFlag:                    statusFlag,
-		OriginalPackets:               0xab,
-		OriginalBytes:                 0xabcd,
-		ReversePackets:                0xa,
-		ReverseBytes:                  0xab,
-		TupleOrig:                     tuple,
-		TupleReply:                    revTuple,
-		IsPresent:                     isPresent,
-		SourcePodNamespace:            "ns",
-		SourcePodName:                 "pod",
-		DestinationPodNamespace:       "",
-		DestinationPodName:            "",
-		IngressNetworkPolicyName:      "",
-		IngressNetworkPolicyNamespace: "",
-		EgressNetworkPolicyName:       "np",
-		EgressNetworkPolicyNamespace:  "np-ns",
-		DestinationServicePortName:    "service",
-		TCPState:                      tcpState,
+		StartTime:                        time.Time{},
+		StopTime:                         time.Time{},
+		StatusFlag:                       statusFlag,
+		OriginalPackets:                  0xab,
+		OriginalBytes:                    0xabcd,
+		ReversePackets:                   0xa,
+		ReverseBytes:                     0xab,
+		TupleOrig:                        tuple,
+		TupleReply:                       revTuple,
+		IsPresent:                        isPresent,
+		SourcePodNamespace:               "ns",
+		SourcePodName:                    "pod",
+		DestinationPodNamespace:          "",
+		DestinationPodName:               "",
+		IngressNetworkPolicyName:         "",
+		IngressNetworkPolicyNamespace:    "",
+		IngressNetworkPolicyUID:          "",
+		IngressNetworkPolicyType:         1,
+		IngressNetworkPolicyRuleName:     "",
+		IngressNetworkPolicyRulePriority: -1,
+		EgressNetworkPolicyName:          "np",
+		EgressNetworkPolicyNamespace:     "np-ns",
+		EgressNetworkPolicyUID:           "",
+		EgressNetworkPolicyType:          1,
+		EgressNetworkPolicyRuleName:      "",
+		EgressNetworkPolicyRulePriority:  -1,
+		DestinationServicePortName:       "service",
+		TCPState:                         tcpState,
 	}
 	return conn
 }

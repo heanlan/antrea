@@ -63,10 +63,18 @@ DATA SET:
     destinationNodeName: k8s-node-control-plane
     destinationServicePort: 5201
     destinationServicePortName:
-    ingressNetworkPolicyName: test-flow-aggregator-networkpolicy-ingress
+    ingressNetworkPolicyName: test-flow-aggregator-networkpolicy
     ingressNetworkPolicyNamespace: antrea-test
-    egressNetworkPolicyName: test-flow-aggregator-networkpolicy-egress
+	ingressNetworkPolicyUID: test-uid
+	ingressNetworkPolicyType: 2
+	ingressNetworkPolicyRuleName: test-ingress-rule-name
+	ingressNetworkPolicyRulePriority: 50000
+    egressNetworkPolicyName: test-flow-aggregator-networkpolicy
     egressNetworkPolicyNamespace: antrea-test
+	egressNetworkPolicyUID: tests-uid
+	egressNetworkPolicyType: 2
+	egressNetworkPolicyRuleName: test-egress-rule-name
+	egressNetworkPolicyRulePriority: 50000
 	flowType: 1
     destinationClusterIPv4: 0.0.0.0
     originalExporterIPv4Address: 10.10.0.1
@@ -245,10 +253,10 @@ func checkRecordsForFlows(t *testing.T, data *TestData, srcIP string, dstIP stri
 				// Check if record has both Pod name of source and destination pod.
 				if isIntraNode {
 					checkPodAndNodeData(t, record, "perftest-a", controlPlaneNodeName(), "perftest-b", controlPlaneNodeName())
-					checkFlowType(t, record, ipfixregistry.IntraNode)
+					checkFlowType(t, record, ipfixregistry.FlowTypeIntraNode)
 				} else {
 					checkPodAndNodeData(t, record, "perftest-a", controlPlaneNodeName(), "perftest-c", workerNodeName(1))
-					checkFlowType(t, record, ipfixregistry.InterNode)
+					checkFlowType(t, record, ipfixregistry.FlowTypeInterNode)
 				}
 
 				if checkService {
@@ -270,11 +278,35 @@ func checkRecordsForFlows(t *testing.T, data *TestData, srcIP string, dstIP stri
 					if !strings.Contains(record, fmt.Sprintf("%s: %s", "ingressNetworkPolicyNamespace", testNamespace)) {
 						t.Errorf("Record does not have correct ingressNetworkPolicyNamespace")
 					}
+					if !strings.Contains(record, fmt.Sprintf("%s: %s", "ingressNetworkPolicyUID", testPolicyUID)) {
+						t.Errorf("Record does not have correct ingressNetworkPolicyUID")
+					}
+					if !strings.Contains(record, fmt.Sprintf("%s: %d", "ingressNetworkPolicyType", testPolicyType)) {
+						t.Errorf("Record does not have correct ingressNetworkPolicyType")
+					}
+					if !strings.Contains(record, fmt.Sprintf("%s: %s", "ingressNetworkPolicyRuleName", testIngressRuleName)) {
+						t.Errorf("Record does not have correct ingressNetworkPolicyNRuleName")
+					}
+					if !strings.Contains(record, fmt.Sprintf("%s: %d", "ingressNetworkPolicyRulePriority", testRulePriority)) {
+						t.Errorf("Record does not have correct ingressNetworkPolicyNRulePriority")
+					}
 					if !strings.Contains(record, egressNetworkPolicyName) {
 						t.Errorf("Record does not have NetworkPolicy name with egress rule")
 					}
 					if !strings.Contains(record, fmt.Sprintf("%s: %s", "egressNetworkPolicyNamespace", testNamespace)) {
 						t.Errorf("Record does not have correct egressNetworkPolicyNamespace")
+					}
+					if !strings.Contains(record, fmt.Sprintf("%s: %s", "egressNetworkPolicyUID", testPolicyUID)) {
+						t.Errorf("Record does not have correct egressNetworkPolicyUID")
+					}
+					if !strings.Contains(record, fmt.Sprintf("%s: %d", "egressNetworkPolicyType", testPolicyType)) {
+						t.Errorf("Record does not have correct ingressNetworkPolicyType")
+					}
+					if !strings.Contains(record, fmt.Sprintf("%s: %s", "egressNetworkPolicyRuleName", testEgressRuleName)) {
+						t.Errorf("Record does not have correct egressNetworkPolicyNRuleName")
+					}
+					if !strings.Contains(record, fmt.Sprintf("%s: %d", "egressNetworkPolicyRulePriority", testRulePriority)) {
+						t.Errorf("Record does not have correct egressNetworkPolicyNRulePriority")
 					}
 				}
 				// Check the bandwidth using octetDeltaCount in data record.

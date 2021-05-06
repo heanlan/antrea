@@ -37,7 +37,10 @@ import (
 	interfacestoretest "github.com/vmware-tanzu/antrea/pkg/agent/interfacestore/testing"
 	"github.com/vmware-tanzu/antrea/pkg/agent/metrics"
 	"github.com/vmware-tanzu/antrea/pkg/agent/openflow"
+	ofClient "github.com/vmware-tanzu/antrea/pkg/agent/openflow"
 	proxytest "github.com/vmware-tanzu/antrea/pkg/agent/proxy/testing"
+	agenttypes "github.com/vmware-tanzu/antrea/pkg/agent/types"
+	"github.com/vmware-tanzu/antrea/pkg/apis/controlplane/v1beta2"
 	cpv1beta "github.com/vmware-tanzu/antrea/pkg/apis/controlplane/v1beta2"
 	queriertest "github.com/vmware-tanzu/antrea/pkg/querier/testing"
 	k8sproxy "github.com/vmware-tanzu/antrea/third_party/proxy"
@@ -51,10 +54,37 @@ var (
 		UID:       "uid1",
 	}
 	np2 = cpv1beta.NetworkPolicyReference{
-		Type:      cpv1beta.K8sNetworkPolicy,
+		Type:      cpv1beta.AntreaNetworkPolicy,
 		Namespace: "foo",
 		Name:      "baz",
 		UID:       "uid2",
+	}
+	rule1 = agenttypes.PolicyRule{
+		Direction:     v1beta2.DirectionIn,
+		From:          []agenttypes.Address{},
+		To:            []agenttypes.Address{},
+		Service:       []v1beta2.Service{},
+		Action:        nil,
+		Priority:      nil,
+		Name:          "",
+		FlowID:        uint32(0),
+		TableID:       ofClient.IngressRuleTable,
+		PolicyRef:     &np1,
+		EnableLogging: false,
+	}
+	priority = uint16(50000)
+	rule2    = agenttypes.PolicyRule{
+		Direction:     v1beta2.DirectionOut,
+		From:          []agenttypes.Address{},
+		To:            []agenttypes.Address{},
+		Service:       []v1beta2.Service{},
+		Action:        nil,
+		Priority:      &priority,
+		Name:          "allow",
+		FlowID:        uint32(0),
+		TableID:       ofClient.EgressRuleTable,
+		PolicyRef:     &np2,
+		EnableLogging: false,
 	}
 )
 
@@ -255,13 +285,45 @@ func TestConnectionStore_addAndUpdateConn(t *testing.T) {
 
 			ingressOfID := binary.LittleEndian.Uint32(test.flow.Labels[:4])
 			npQuerier.EXPECT().GetNetworkPolicyByRuleFlowID(ingressOfID).Return(&np1)
+			npQuerier.EXPECT().GetRuleByFlowID(ingressOfID).Return(&rule1)
 			expConn.IngressNetworkPolicyName = np1.Name
 			expConn.IngressNetworkPolicyNamespace = np1.Namespace
+			expConn.IngressNetworkPolicyUID = string(np1.UID)
+			switch np1.Type {
+			case cpv1beta.K8sNetworkPolicy:
+				expConn.IngressNetworkPolicyType = 1
+			case cpv1beta.AntreaNetworkPolicy:
+				expConn.IngressNetworkPolicyType = 2
+			case cpv1beta.AntreaClusterNetworkPolicy:
+				expConn.IngressNetworkPolicyType = 3
+			}
+			expConn.IngressNetworkPolicyRuleName = rule1.Name
+			if expConn.IngressNetworkPolicyType == 1 {
+				expConn.IngressNetworkPolicyRulePriority = -1
+			} else {
+				expConn.IngressNetworkPolicyRulePriority = int32(*rule1.Priority)
+			}
 
 			egressOfID := binary.LittleEndian.Uint32(test.flow.Labels[4:8])
 			npQuerier.EXPECT().GetNetworkPolicyByRuleFlowID(egressOfID).Return(&np2)
+			npQuerier.EXPECT().GetRuleByFlowID(egressOfID).Return(&rule2)
 			expConn.EgressNetworkPolicyName = np2.Name
 			expConn.EgressNetworkPolicyNamespace = np2.Namespace
+			expConn.EgressNetworkPolicyUID = string(np2.UID)
+			switch np2.Type {
+			case cpv1beta.K8sNetworkPolicy:
+				expConn.EgressNetworkPolicyType = 1
+			case cpv1beta.AntreaNetworkPolicy:
+				expConn.EgressNetworkPolicyType = 2
+			case cpv1beta.AntreaClusterNetworkPolicy:
+				expConn.EgressNetworkPolicyType = 3
+			}
+			expConn.EgressNetworkPolicyRuleName = rule2.Name
+			if expConn.EgressNetworkPolicyType == 1 {
+				expConn.EgressNetworkPolicyRulePriority = -1
+			} else {
+				expConn.EgressNetworkPolicyRulePriority = int32(*rule2.Priority)
+			}
 		}
 		connStore.addOrUpdateConn(&test.flow)
 		actualConn, ok := connStore.GetConnByKey(flowTuple)

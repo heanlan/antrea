@@ -553,13 +553,6 @@ func (exp *flowExporter) addRecordToSet(record flowexporter.FlowRecord) error {
 
 func (exp *flowExporter) sendDataSet() (int, error) {
 	sentBytes, err := exp.process.SendSet(exp.ipfixSet)
-	klog.Info("\n\n\n\n\n\n\n\n\n")
-	for _, record := range exp.ipfixSet.GetRecords() {
-		for _, ie := range record.GetOrderedElementList() {
-			klog.Info(ie.Element.Name)
-			klog.Info(ie.Value)
-		}
-	}
 	if err != nil {
 		return 0, fmt.Errorf("error when sending data set: %v", err)
 	}
