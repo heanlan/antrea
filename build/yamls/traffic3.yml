@@ -1,0 +1,156 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: iperf3-1
+spec:
+  clusterIP: 10.96.0.131
+  selector:
+    app: web-server3-1
+  ports:
+    - name: tcp
+      protocol: TCP
+      port: 8081
+      targetPort: 8080
+    - name: udp
+      protocol: UDP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-server3-1
+  labels:
+    app: web-server3-1
+spec:
+  selector:
+    matchLabels:
+      app: web-server3-1
+  template:
+    metadata:
+      labels:
+        app: web-server3-1
+    spec:
+      containers:
+      - name: iperf-server3-1
+        image: zyiou/iperf
+        imagePullPolicy: IfNotPresent
+        command: ["iperf"]
+        args: ["-s", "-p", "8080"]
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        - containerPort: 8080
+          protocol: UDP
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
+      # nodeSelector:
+      #   app: master
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-client3-1
+  labels:
+    app: web-client3-1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web-client3-1
+  template:
+    metadata:
+      labels:
+        app: web-client3-1
+    spec:
+      containers:
+      - name: iperf-client3-1
+        image: zyiou/iperf
+        imagePullPolicy: IfNotPresent
+        command: ["iperf"]
+        args: ["-c", "10.96.0.131", "-p", "8081", "-t", "3000", "-b", "100M"]
+---
+apiVersion: crd.antrea.io/v1alpha1
+kind: NetworkPolicy
+metadata:
+  name: test-anp
+  namespace: default
+spec:
+    priority: 5
+    tier: securityops
+    appliedTo:
+      - podSelector:
+          matchLabels:
+            app: web-server3-1
+    ingress:
+      - action: Allow
+        from:
+          - podSelector:
+              matchLabels:
+                app: web-client3-1
+        ports:
+          - protocol: TCP
+            port: 8080
+            endPort: 9000
+        name: AllowFromFrontend
+        enableLogging: false
+    egress:
+      - action: Drop
+        to:
+          - ipBlock:
+              cidr: 10.0.10.0/24
+        ports:
+          - protocol: TCP
+            port: 5978
+        name: DropToThirdParty
+        enableLogging: true
+---
+apiVersion: crd.antrea.io/v1alpha1
+kind: ClusterNetworkPolicy
+metadata:
+  name: acnp-with-stand-alone-selectors
+spec:
+    priority: 5
+    tier: securityops
+    appliedTo:
+      - podSelector:
+          matchLabels:
+            app: web-server3-1
+    ingress:
+      - action: Allow
+        from:
+          - podSelector:
+              matchLabels:
+                app: web-client3-1
+        ports:
+          - protocol: TCP
+            port: 8080
+            endPort: 9000
+          - protocol: TCP
+            port: 6379  
+        name: AllowFromFrontend
+        enableLogging: false
+    egress:
+      - action: Drop
+        to:
+          - ipBlock:
+              cidr: 10.0.10.0/24
+        ports:
+          - protocol: TCP
+            port: 5978
+        name: DropToThirdParty
+        enableLogging: true
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: web-allow-all
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: web-server3-1
+  ingress:
+  - {}
+

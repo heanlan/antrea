@@ -54,16 +54,24 @@ type Connection struct {
 	OriginalPackets, OriginalBytes uint64
 	ReversePackets, ReverseBytes   uint64
 	// Fields specific to Antrea
-	SourcePodNamespace            string
-	SourcePodName                 string
-	DestinationPodNamespace       string
-	DestinationPodName            string
-	DestinationServicePortName    string
-	IngressNetworkPolicyName      string
-	IngressNetworkPolicyNamespace string
-	EgressNetworkPolicyName       string
-	EgressNetworkPolicyNamespace  string
-	TCPState                      string
+	SourcePodNamespace               string
+	SourcePodName                    string
+	DestinationPodNamespace          string
+	DestinationPodName               string
+	DestinationServicePortName       string
+	IngressNetworkPolicyName         string
+	IngressNetworkPolicyNamespace    string
+	IngressNetworkPolicyUID          string
+	IngressNetworkPolicyType         uint8
+	IngressNetworkPolicyRuleName     string
+	IngressNetworkPolicyRulePriority int32
+	EgressNetworkPolicyName          string
+	EgressNetworkPolicyNamespace     string
+	EgressNetworkPolicyUID           string
+	EgressNetworkPolicyType          uint8
+	EgressNetworkPolicyRuleName      string
+	EgressNetworkPolicyRulePriority  int32
+	TCPState                         string
 }
 
 type FlowRecord struct {

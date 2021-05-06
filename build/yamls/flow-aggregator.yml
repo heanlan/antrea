@@ -129,7 +129,7 @@ data:
   flow-aggregator.conf: |
     # Provide the flow collector address as string with format <IP>:<port>[:<proto>], where proto is tcp or udp.
     # If no L4 transport proto is given, we consider tcp as default.
-    #externalFlowCollectorAddr: ""
+    externalFlowCollectorAddr: "10.102.159.27:4739:tcp"
 
     # Provide flow export interval as a duration string. This determines how often the flow aggregator exports flow
     # records to the flow collector.
@@ -205,8 +205,9 @@ spec:
         - --log_file_max_size=100
         - --log_file_max_num=4
         - --v=0
-        image: projects.registry.vmware.com/antrea/flow-aggregator:latest
-        imagePullPolicy: IfNotPresent
+        # image: projects.registry.vmware.com/antrea/flow-aggregator:latest
+        image: hanlan/flow-aggregator:v1.0.0
+        imagePullPolicy: Always
         name: flow-aggregator
         ports:
         - containerPort: 4739

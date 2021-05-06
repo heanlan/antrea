@@ -69,8 +69,16 @@ var (
 		"destinationServicePortName",
 		"ingressNetworkPolicyName",
 		"ingressNetworkPolicyNamespace",
+		"ingressNetworkPolicyUID",
+		"ingressNetworkPolicyType",
+		"ingressNetworkPolicyRuleName",
+		"ingressNetworkPolicyRulePriority",
 		"egressNetworkPolicyName",
 		"egressNetworkPolicyNamespace",
+		"egressNetworkPolicyUID",
+		"egressNetworkPolicyType",
+		"egressNetworkPolicyRuleName",
+		"egressNetworkPolicyRulePriority",
 		"tcpState",
 		"flowType",
 	}
@@ -505,10 +513,26 @@ func (exp *flowExporter) addRecordToSet(record flowexporter.FlowRecord) error {
 			ie.Value = record.Conn.IngressNetworkPolicyName
 		case "ingressNetworkPolicyNamespace":
 			ie.Value = record.Conn.IngressNetworkPolicyNamespace
+		case "ingressNetworkPolicyUID":
+			ie.Value = record.Conn.IngressNetworkPolicyUID
+		case "ingressNetworkPolicyType":
+			ie.Value = record.Conn.IngressNetworkPolicyType
+		case "ingressNetworkPolicyRuleName":
+			ie.Value = record.Conn.IngressNetworkPolicyRuleName
+		case "ingressNetworkPolicyRulePriority":
+			ie.Value = record.Conn.IngressNetworkPolicyRulePriority
 		case "egressNetworkPolicyName":
 			ie.Value = record.Conn.EgressNetworkPolicyName
 		case "egressNetworkPolicyNamespace":
 			ie.Value = record.Conn.EgressNetworkPolicyNamespace
+		case "egressNetworkPolicyUID":
+			ie.Value = record.Conn.EgressNetworkPolicyUID
+		case "egressNetworkPolicyType":
+			ie.Value = record.Conn.EgressNetworkPolicyType
+		case "egressNetworkPolicyRuleName":
+			ie.Value = record.Conn.EgressNetworkPolicyRuleName
+		case "egressNetworkPolicyRulePriority":
+			ie.Value = record.Conn.EgressNetworkPolicyRulePriority
 		case "tcpState":
 			ie.Value = record.Conn.TCPState
 		case "flowType":
@@ -529,6 +553,13 @@ func (exp *flowExporter) addRecordToSet(record flowexporter.FlowRecord) error {
 
 func (exp *flowExporter) sendDataSet() (int, error) {
 	sentBytes, err := exp.process.SendSet(exp.ipfixSet)
+	klog.Info("\n\n\n\n\n\n\n\n\n")
+	for _, record := range exp.ipfixSet.GetRecords() {
+		for _, ie := range record.GetOrderedElementList() {
+			klog.Info(ie.Element.Name)
+			klog.Info(ie.Value)
+		}
+	}
 	if err != nil {
 		return 0, fmt.Errorf("error when sending data set: %v", err)
 	}
@@ -540,9 +571,9 @@ func (exp *flowExporter) findFlowType(record flowexporter.FlowRecord) uint8 {
 	// TODO: support Pod-To-External flows in network policy only mode.
 	if exp.isNetworkPolicyOnly {
 		if record.Conn.SourcePodName == "" || record.Conn.DestinationPodName == "" {
-			return ipfixregistry.InterNode
+			return ipfixregistry.FlowTypeInterNode
 		}
-		return ipfixregistry.IntraNode
+		return ipfixregistry.FlowTypeIntraNode
 	}
 
 	if exp.nodeRouteController == nil {
@@ -552,11 +583,11 @@ func (exp *flowExporter) findFlowType(record flowexporter.FlowRecord) uint8 {
 	if exp.nodeRouteController.IPInPodSubnets(record.Conn.TupleOrig.SourceAddress) {
 		if record.Conn.Mark == openflow.ServiceCTMark || exp.nodeRouteController.IPInPodSubnets(record.Conn.TupleOrig.DestinationAddress) {
 			if record.Conn.SourcePodName == "" || record.Conn.DestinationPodName == "" {
-				return ipfixregistry.InterNode
+				return ipfixregistry.FlowTypeInterNode
 			}
-			return ipfixregistry.IntraNode
+			return ipfixregistry.FlowTypeIntraNode
 		} else {
-			return ipfixregistry.ToExternal
+			return ipfixregistry.FlowTypeToExternal
 		}
 	} else {
 		// We do not support External-To-Pod flows for now.

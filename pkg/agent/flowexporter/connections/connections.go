@@ -178,6 +178,7 @@ func (cs *connectionStore) addOrUpdateConn(conn *flowexporter.Connection) {
 			egressOfID := binary.LittleEndian.Uint32(conn.Labels[4:8])
 			if ingressOfID != 0 {
 				policy := cs.networkPolicyQuerier.GetNetworkPolicyByRuleFlowID(ingressOfID)
+				rule := cs.networkPolicyQuerier.GetRuleByFlowID(ingressOfID)
 				if policy == nil {
 					// This should not happen because the rule flow ID to rule mapping is
 					// preserved for max(5s, flowPollInterval) even after the rule deletion.
@@ -185,10 +186,27 @@ func (cs *connectionStore) addOrUpdateConn(conn *flowexporter.Connection) {
 				} else {
 					conn.IngressNetworkPolicyName = policy.Name
 					conn.IngressNetworkPolicyNamespace = policy.Namespace
+					conn.IngressNetworkPolicyUID = string(policy.UID)
+					switch policy.Type {
+					case "K8sNetworkPolicy":
+						conn.IngressNetworkPolicyType = 1
+					case "AntreaNetworkPolicy":
+						conn.IngressNetworkPolicyType = 2
+					case "AntreaClusterNetworkPolicy":
+						conn.IngressNetworkPolicyType = 3
+					}
+					conn.IngressNetworkPolicyRuleName = rule.Name
+					// TODO: tier name, tier priority, policy priority to be added when support available
+					if policy.Type == "K8sNetworkPolicy" {
+						conn.IngressNetworkPolicyRulePriority = -1
+					} else {
+						conn.IngressNetworkPolicyRulePriority = int32(*rule.Priority)
+					}
 				}
 			}
 			if egressOfID != 0 {
 				policy := cs.networkPolicyQuerier.GetNetworkPolicyByRuleFlowID(egressOfID)
+				rule := cs.networkPolicyQuerier.GetRuleByFlowID(egressOfID)
 				if policy == nil {
 					// This should not happen because the rule flow ID to rule mapping is
 					// preserved for max(5s, flowPollInterval) even after the rule deletion.
@@ -196,6 +214,21 @@ func (cs *connectionStore) addOrUpdateConn(conn *flowexporter.Connection) {
 				} else {
 					conn.EgressNetworkPolicyName = policy.Name
 					conn.EgressNetworkPolicyNamespace = policy.Namespace
+					conn.EgressNetworkPolicyUID = string(policy.UID)
+					switch policy.Type {
+					case "K8sNetworkPolicy":
+						conn.EgressNetworkPolicyType = 1
+					case "AntreaNetworkPolicy":
+						conn.EgressNetworkPolicyType = 2
+					case "AntreaClusterNetworkPolicy":
+						conn.EgressNetworkPolicyType = 3
+					}
+					conn.EgressNetworkPolicyRuleName = rule.Name
+					if policy.Type == "K8sNetworkPolicy" {
+						conn.EgressNetworkPolicyRulePriority = -1
+					} else {
+						conn.EgressNetworkPolicyRulePriority = int32(*rule.Priority)
+					}
 				}
 			}
 		}
