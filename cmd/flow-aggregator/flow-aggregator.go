@@ -15,11 +15,13 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"hash/fnv"
 	"sync"
 	"time"
 
+	"github.com/ClickHouse/clickhouse-go"
 	"github.com/google/uuid"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/informers"
@@ -105,7 +107,7 @@ func run(o *Options) error {
 	} else {
 		sendJSONRecord = false
 	}
-
+	connect := createClickHouseClient()
 	flowAggregator := aggregator.NewFlowAggregator(
 		o.externalFlowCollectorAddr,
 		o.externalFlowCollectorProto,
@@ -118,6 +120,7 @@ func run(o *Options) error {
 		observationDomainID,
 		podInformer,
 		sendJSONRecord,
+		connect,
 	)
 	err = flowAggregator.InitCollectingProcess()
 	if err != nil {
@@ -146,7 +149,6 @@ func run(o *Options) error {
 	go apiServer.Run(stopCh)
 
 	informerFactory.Start(stopCh)
-
 	<-stopCh
 	klog.Infof("Stopping flow aggregator")
 	wg.Wait()
@@ -163,4 +165,38 @@ func createK8sClient() (kubernetes.Interface, error) {
 		return nil, err
 	}
 	return k8sClient, nil
+}
+
+func createClickHouseClient() *sql.DB {
+	connect, err := sql.Open("clickhouse", "tcp://clickhouse-clickhouse.flow-visibility:9000?debug=true&username=clickhouse_operator&password=clickhouse_operator_password")
+	if err != nil {
+		klog.Fatal(err)
+	}
+	if err := connect.Ping(); err != nil {
+		if exception, ok := err.(*clickhouse.Exception); ok {
+			fmt.Printf("[%d] %s \n%s\n", exception.Code, exception.Message, exception.StackTrace)
+		} else {
+			fmt.Println(err)
+		}
+		return nil
+	}
+
+	_, err = connect.Exec(`
+		CREATE TABLE IF NOT EXISTS antrea (
+			sourceIP String,
+			destinationIP String,
+			sourcePort UInt16,
+			destinationPort UInt16,
+			sourcePodName String,
+			destinationPodName String,
+			bytesDelta UInt64,
+			packetsDelta UInt64,
+			flowEndSeconds DateTime
+		) engine=Memory
+	`)
+
+	if err != nil {
+		klog.Fatal(err)
+	}
+	return connect
 }

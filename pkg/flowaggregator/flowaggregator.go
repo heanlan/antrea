@@ -16,6 +16,7 @@ package flowaggregator
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"sync"
@@ -209,6 +210,7 @@ type flowAggregator struct {
 	observationDomainID         uint32
 	podInformer                 coreinformers.PodInformer
 	sendJSONRecord              bool
+	dbConnection                *sql.DB
 	numRecordsExported          int64
 	numRecordsReceived          int64
 }
@@ -225,6 +227,7 @@ func NewFlowAggregator(
 	observationDomainID uint32,
 	podInformer coreinformers.PodInformer,
 	sendJSONRecord bool,
+	connect *sql.DB,
 ) *flowAggregator {
 	registry := ipfix.NewIPFIXRegistry()
 	registry.LoadRegistry()
@@ -242,6 +245,7 @@ func NewFlowAggregator(
 		observationDomainID:         observationDomainID,
 		podInformer:                 podInformer,
 		sendJSONRecord:              sendJSONRecord,
+		dbConnection:                connect,
 	}
 	podInformer.Informer().AddIndexers(cache.Indexers{podInfoIndex: podInfoIndexFunc})
 	return fa
@@ -475,6 +479,38 @@ func (fa *flowAggregator) sendFlowKeyRecord(key ipfixintermediate.FlowKey, recor
 	if err != nil {
 		return err
 	}
+
+	var (
+		tx, _   = fa.dbConnection.Begin()
+		stmt, _ = tx.Prepare("INSERT INTO antrea (sourceIP, destinationIP, sourcePort, destinationPort, sourcePodName, destinationPodName, bytesDelta, packetsDelta, flowEndSeconds) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	)
+	defer stmt.Close()
+	sourceIP, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("sourceIPv4Address")
+	destinationIP, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("destinationIPv4Address")
+	sourcePort, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("sourceTransportPort")
+	destinationPort, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("destinationTransportPort")
+	sourcePodName, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("sourcePodName")
+	destinationPodName, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("destinationPodName")
+	octetDeltaCount, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("octetDeltaCount")
+	packetDeltaCount, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("packetDeltaCount")
+	if _, err := stmt.Exec(
+		sourceIP.GetIPAddressValue().String(),
+		destinationIP.GetIPAddressValue().String(),
+		sourcePort.GetUnsigned16Value(),
+		destinationPort.GetUnsigned16Value(),
+		sourcePodName.GetStringValue(),
+		destinationPodName.GetStringValue(),
+		octetDeltaCount.GetUnsigned64Value(),
+		packetDeltaCount.GetUnsigned64Value(),
+		time.Now(),
+	); err != nil {
+		klog.Fatal(err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		klog.Fatal(err)
+	}
+
 	if err = fa.aggregationProcess.ResetStatElementsInRecord(record.Record); err != nil {
 		return err
 	}
