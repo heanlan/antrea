@@ -481,8 +481,36 @@ func (fa *flowAggregator) sendFlowKeyRecord(key ipfixintermediate.FlowKey, recor
 	}
 
 	var (
-		tx, _   = fa.dbConnection.Begin()
-		stmt, _ = tx.Prepare("INSERT INTO antrea (sourceIP, destinationIP, sourcePort, destinationPort, sourcePodName, destinationPodName, bytesDelta, packetsDelta, flowEndSeconds) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+		tx, _ = fa.dbConnection.Begin()
+		query = `INSERT INTO antrea (
+			sourceIP, 
+			destinationIP, 
+			sourcePort, 
+			destinationPort, 
+			sourcePodName, 
+			destinationPodName, 
+			sourceNodeName,
+			destinationNodeName,
+			destinationServicePort, 
+			destinationServicePortName, 
+			ingressNetworkPolicyName, 
+			ingressNetworkPolicyNamespace, 
+			egressNetworkPolicyName, 
+			egressNetworkPolicyNamespace, 
+			bytesDelta, 
+			reverseBytesDelta, 
+			bytesTotal, 
+			throughput, 
+			reverseThroughput, 
+			sourceThroughput, 
+			reverseSourceThroughput, 
+			destinationThroughput, 
+			reverseDestinationThroughput, 
+			flowEndSeconds,
+			sourceFlowEndSeconds,
+			destinationFlowEndSeconds) 
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+		stmt, _ = tx.Prepare(query)
 	)
 	defer stmt.Close()
 	sourceIP, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("sourceIPv4Address")
@@ -491,8 +519,26 @@ func (fa *flowAggregator) sendFlowKeyRecord(key ipfixintermediate.FlowKey, recor
 	destinationPort, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("destinationTransportPort")
 	sourcePodName, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("sourcePodName")
 	destinationPodName, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("destinationPodName")
+	sourceNodeName, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("sourceNodeName")
+	destinationNodeName, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("destinationNodeName")
+	destinationServicePort, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("destinationServicePort")
+	destinationServicePortName, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("destinationServicePortName")
+	ingressNetworkPolicyName, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("ingressNetworkPolicyName")
+	ingressNetworkPolicyNamespace, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("ingressNetworkPolicyNamespace")
+	egressNetworkPolicyName, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("egressNetworkPolicyName")
+	egressNetworkPolicyNamespace, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("egressNetworkPolicyNamespace")
 	octetDeltaCount, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("octetDeltaCount")
-	packetDeltaCount, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("packetDeltaCount")
+	reverseOctetDeltaCount, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("reverseOctetDeltaCount")
+	octetTotalCount, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("octetTotalCount")
+	throughput, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("throughput")
+	reverseThroughput, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("reverseThroughput")
+	sourceThroughput, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("throughputFromSourceNode")
+	reverseSourceThroughput, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("reverseThroughputFromSourceNode")
+	destinationThroughput, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("throughputFromDestinationNode")
+	reverseDestinationThroughput, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("reverseThroughputFromDestinationNode")
+	flowEndSeconds, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("flowEndSeconds")
+	flowEndSecondsFromSourceNode, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("flowEndSecondsFromSourceNode")
+	flowEndSecondsFromDestiantionNode, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("flowEndSecondsFromDestinationNode")
 	if _, err := stmt.Exec(
 		sourceIP.GetIPAddressValue().String(),
 		destinationIP.GetIPAddressValue().String(),
@@ -500,9 +546,26 @@ func (fa *flowAggregator) sendFlowKeyRecord(key ipfixintermediate.FlowKey, recor
 		destinationPort.GetUnsigned16Value(),
 		sourcePodName.GetStringValue(),
 		destinationPodName.GetStringValue(),
+		sourceNodeName.GetStringValue(),
+		destinationNodeName.GetStringValue(),
+		destinationServicePort.GetUnsigned16Value(),
+		destinationServicePortName.GetStringValue(),
+		ingressNetworkPolicyName.GetStringValue(),
+		ingressNetworkPolicyNamespace.GetStringValue(),
+		egressNetworkPolicyName.GetStringValue(),
+		egressNetworkPolicyNamespace.GetStringValue(),
 		octetDeltaCount.GetUnsigned64Value(),
-		packetDeltaCount.GetUnsigned64Value(),
-		time.Now(),
+		reverseOctetDeltaCount.GetUnsigned64Value(),
+		octetTotalCount.GetUnsigned64Value(),
+		throughput.GetUnsigned64Value(),
+		reverseThroughput.GetUnsigned64Value(),
+		sourceThroughput.GetUnsigned64Value(),
+		reverseSourceThroughput.GetUnsigned64Value(),
+		destinationThroughput.GetUnsigned64Value(),
+		reverseDestinationThroughput.GetUnsigned64Value(),
+		time.Unix(int64(flowEndSeconds.GetUnsigned32Value()), 0),
+		time.Unix(int64(flowEndSecondsFromSourceNode.GetUnsigned32Value()), 0),
+		time.Unix(int64(flowEndSecondsFromDestiantionNode.GetUnsigned32Value()), 0),
 	); err != nil {
 		klog.Fatal(err)
 	}
