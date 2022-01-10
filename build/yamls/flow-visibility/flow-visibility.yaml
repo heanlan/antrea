@@ -91,13 +91,14 @@ data:
     apiVersion: 1
     datasources:
       - name: ClickHouse
-        type: grafana-clickhouse-datasource
+        type: vertamedia-clickhouse-datasource
+        access: proxy
+        url: http://clickhouse-clickhouse.flow-visibility.svc:8123
+        editable: true
         jsonData:
-          server: clickhouse-clickhouse.flow-visibility.svc
-          port: 9000
-          username: clickhouse_operator
-        secureJsonData:
-          password: clickhouse_operator_password
+          useYandexCloudAuthorization: true
+          xHeaderUser: clickhouse_operator
+          xHeaderKey: clickhouse_operator_password
 ---
 apiVersion: clickhouse.altinity.com/v1
 kind: ClickHouseInstallation
@@ -138,7 +139,7 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: GF_INSTALL_PLUGINS
-              value: "https://github.com/antrea-io/antrea/releases/download/v1.5.0/grafana-sankey-plugin;antreaflowvisibility-grafana-sankey-plugin,grafana-clickhouse-datasource"
+              value: "https://github.com/zyiou/grafana-custom-plugin/releases/download/1.0.7/grafana-sankey-plugin.zip;antreaflowvisibility-grafana-sankey-plugin,vertamedia-clickhouse-datasource"
           ports:
             - containerPort: 3000
               name: http-grafana
