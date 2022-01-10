@@ -1,41 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_CLICKHOUSE",
-      "label": "ClickHouse",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "vertamedia-clickhouse-datasource",
-      "pluginName": "ClickHouse"
-    }
-  ],
-  "__elements": [],
-  "__requires": [
-    {
-      "type": "panel",
-      "id": "antreaflowvisibility-grafana-sankey-plugin",
-      "name": "grafana-sankey-plugin",
-      "version": "1.0.0"
-    },
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "8.3.3"
-    },
-    {
-      "type": "panel",
-      "id": "timeseries",
-      "name": "Time series",
-      "version": ""
-    },
-    {
-      "type": "datasource",
-      "id": "vertamedia-clickhouse-datasource",
-      "name": "ClickHouse",
-      "version": "2.3.1"
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -58,14 +21,15 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
+  "id": 1,
+  "iteration": 1641847383126,
   "links": [],
   "liveNow": false,
   "panels": [
     {
       "datasource": {
         "type": "vertamedia-clickhouse-datasource",
-        "uid": "${DS_CLICKHOUSE}"
+        "uid": "PDEE91DDB90597936"
       },
       "gridPos": {
         "h": 18,
@@ -85,7 +49,7 @@
           "database": "default",
           "datasource": {
             "type": "vertamedia-clickhouse-datasource",
-            "uid": "${DS_CLICKHOUSE}"
+            "uid": "PDEE91DDB90597936"
           },
           "dateColDataType": "",
           "dateLoading": false,
@@ -112,7 +76,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "${DS_CLICKHOUSE}"
+        "uid": "ClickHouse"
       },
       "gridPos": {
         "h": 18,
@@ -155,7 +119,7 @@
     {
       "datasource": {
         "type": "vertamedia-clickhouse-datasource",
-        "uid": "${DS_CLICKHOUSE}"
+        "uid": "PDEE91DDB90597936"
       },
       "fieldConfig": {
         "defaults": {
@@ -237,7 +201,7 @@
           "database": "default",
           "datasource": {
             "type": "vertamedia-clickhouse-datasource",
-            "uid": "${DS_CLICKHOUSE}"
+            "uid": "ClickHouse"
           },
           "dateColDataType": "",
           "dateLoading": false,
@@ -279,7 +243,7 @@
     {
       "datasource": {
         "type": "vertamedia-clickhouse-datasource",
-        "uid": "${DS_CLICKHOUSE}"
+        "uid": "PDEE91DDB90597936"
       },
       "fieldConfig": {
         "defaults": {
@@ -358,7 +322,7 @@
           "database": "default",
           "datasource": {
             "type": "vertamedia-clickhouse-datasource",
-            "uid": "${DS_CLICKHOUSE}"
+            "uid": "ClickHouse"
           },
           "dateColDataType": "",
           "dateLoading": false,
@@ -400,7 +364,7 @@
     {
       "datasource": {
         "type": "vertamedia-clickhouse-datasource",
-        "uid": "${DS_CLICKHOUSE}"
+        "uid": "PDEE91DDB90597936"
       },
       "fieldConfig": {
         "defaults": {
@@ -479,7 +443,7 @@
           "database": "default",
           "datasource": {
             "type": "vertamedia-clickhouse-datasource",
-            "uid": "${DS_CLICKHOUSE}"
+            "uid": "ClickHouse"
           },
           "dateColDataType": "",
           "dateLoading": false,
@@ -521,7 +485,7 @@
     {
       "datasource": {
         "type": "vertamedia-clickhouse-datasource",
-        "uid": "${DS_CLICKHOUSE}"
+        "uid": "PDEE91DDB90597936"
       },
       "fieldConfig": {
         "defaults": {
@@ -600,7 +564,7 @@
           "database": "default",
           "datasource": {
             "type": "vertamedia-clickhouse-datasource",
-            "uid": "${DS_CLICKHOUSE}"
+            "uid": "ClickHouse"
           },
           "dateColDataType": "",
           "dateLoading": false,
@@ -642,7 +606,7 @@
     {
       "datasource": {
         "type": "vertamedia-clickhouse-datasource",
-        "uid": "${DS_CLICKHOUSE}"
+        "uid": "PDEE91DDB90597936"
       },
       "fieldConfig": {
         "defaults": {
@@ -721,7 +685,7 @@
           "database": "default",
           "datasource": {
             "type": "vertamedia-clickhouse-datasource",
-            "uid": "${DS_CLICKHOUSE}"
+            "uid": "ClickHouse"
           },
           "dateColDataType": "",
           "dateLoading": false,
@@ -763,7 +727,7 @@
     {
       "datasource": {
         "type": "vertamedia-clickhouse-datasource",
-        "uid": "${DS_CLICKHOUSE}"
+        "uid": "PDEE91DDB90597936"
       },
       "fieldConfig": {
         "defaults": {
@@ -842,7 +806,7 @@
           "database": "default",
           "datasource": {
             "type": "vertamedia-clickhouse-datasource",
-            "uid": "${DS_CLICKHOUSE}"
+            "uid": "ClickHouse"
           },
           "dateColDataType": "",
           "dateLoading": false,
@@ -887,7 +851,19 @@
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "datasource": {
+          "type": "vertamedia-clickhouse-datasource",
+          "uid": "PDEE91DDB90597936"
+        },
+        "filters": [],
+        "hide": 0,
+        "name": "Filter",
+        "skipUrlSync": false,
+        "type": "adhoc"
+      }
+    ]
   },
   "time": {
     "from": "now-30m",
@@ -897,6 +873,6 @@
   "timezone": "",
   "title": "pod_to_pod_dashboard",
   "uid": "Yxn0Ghh7k",
-  "version": 13,
+  "version": 14,
   "weekStart": ""
 }

@@ -1,47 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_CLICKHOUSE",
-      "label": "ClickHouse",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "vertamedia-clickhouse-datasource",
-      "pluginName": "ClickHouse"
-    }
-  ],
-  "__elements": [],
-  "__requires": [
-    {
-      "type": "panel",
-      "id": "antreaflowvisibility-grafana-sankey-plugin",
-      "name": "grafana-sankey-plugin",
-      "version": "1.0.0"
-    },
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "8.3.3"
-    },
-    {
-      "type": "panel",
-      "id": "heatmap",
-      "name": "Heatmap",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "timeseries",
-      "name": "Time series",
-      "version": ""
-    },
-    {
-      "type": "datasource",
-      "id": "vertamedia-clickhouse-datasource",
-      "name": "ClickHouse",
-      "version": "2.3.1"
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -64,14 +21,15 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
+  "id": 6,
+  "iteration": 1641847473616,
   "links": [],
   "liveNow": false,
   "panels": [
     {
       "datasource": {
         "type": "vertamedia-clickhouse-datasource",
-        "uid": "${DS_CLICKHOUSE}"
+        "uid": "PDEE91DDB90597936"
       },
       "gridPos": {
         "h": 18,
@@ -115,7 +73,7 @@
     {
       "datasource": {
         "type": "vertamedia-clickhouse-datasource",
-        "uid": "${DS_CLICKHOUSE}"
+        "uid": "PDEE91DDB90597936"
       },
       "gridPos": {
         "h": 18,
@@ -136,7 +94,7 @@
           "database": "default",
           "datasource": {
             "type": "vertamedia-clickhouse-datasource",
-            "uid": "${DS_CLICKHOUSE}"
+            "uid": "PDEE91DDB90597936"
           },
           "dateColDataType": "",
           "dateLoading": false,
@@ -163,7 +121,7 @@
     {
       "datasource": {
         "type": "vertamedia-clickhouse-datasource",
-        "uid": "${DS_CLICKHOUSE}"
+        "uid": "PDEE91DDB90597936"
       },
       "fieldConfig": {
         "defaults": {
@@ -242,7 +200,7 @@
           "database": "default",
           "datasource": {
             "type": "vertamedia-clickhouse-datasource",
-            "uid": "${DS_CLICKHOUSE}"
+            "uid": "PDEE91DDB90597936"
           },
           "dateColDataType": "",
           "dateLoading": false,
@@ -254,9 +212,9 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "hide": false,
           "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    AVG(sourceThroughput),\n    sourceNodeName\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\n\nGROUP BY\n    sourceNodeName,\n    t\nORDER BY t\n",
+          "query": "SELECT\n    $timeSeries as t,\n    AVG(sourceThroughput),\n    sourceNodeName\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    sourceNodeName,\n    t\nORDER BY t\n",
           "queryType": "randomWalk",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(flowEndSeconds), 60) * 60) * 1000 as t,\n    AVG(sourceThroughput),\n    sourceNodeName\nFROM default.antrea\n\nWHERE flowEndSeconds >= toDateTime(1641782871) AND flowEndSeconds <= toDateTime(1641784671)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\n\nGROUP BY\n    sourceNodeName,\n    t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(flowEndSeconds), 60) * 60) * 1000 as t,\n    AVG(sourceThroughput),\n    sourceNodeName\nFROM default.antrea\n\nWHERE flowEndSeconds >= toDateTime(1641844754) AND flowEndSeconds <= toDateTime(1641846554)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    sourceNodeName,\n    t\nORDER BY t",
           "refId": "A",
           "round": "0s",
           "skip_comments": true,
@@ -284,7 +242,7 @@
     {
       "datasource": {
         "type": "vertamedia-clickhouse-datasource",
-        "uid": "${DS_CLICKHOUSE}"
+        "uid": "PDEE91DDB90597936"
       },
       "fieldConfig": {
         "defaults": {
@@ -363,7 +321,7 @@
           "database": "default",
           "datasource": {
             "type": "vertamedia-clickhouse-datasource",
-            "uid": "${DS_CLICKHOUSE}"
+            "uid": "PDEE91DDB90597936"
           },
           "dateColDataType": "",
           "dateLoading": false,
@@ -375,9 +333,9 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "hide": false,
           "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    AVG(reverseSourceThroughput),\n    sourceNodeName\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\n\nGROUP BY\n    sourceNodeName,\n    t\nORDER BY t\n",
+          "query": "SELECT\n    $timeSeries as t,\n    AVG(reverseSourceThroughput),\n    sourceNodeName\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    sourceNodeName,\n    t\nORDER BY t\n",
           "queryType": "randomWalk",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(flowEndSeconds), 60) * 60) * 1000 as t,\n    AVG(reverseSourceThroughput),\n    sourceNodeName\nFROM default.antrea\n\nWHERE flowEndSeconds >= toDateTime(1641780324) AND flowEndSeconds <= toDateTime(1641782124)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\n\nGROUP BY\n    sourceNodeName,\n    t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(flowEndSeconds), 60) * 60) * 1000 as t,\n    AVG(reverseSourceThroughput),\n    sourceNodeName\nFROM default.antrea\n\nWHERE flowEndSeconds >= toDateTime(1641835745) AND flowEndSeconds <= toDateTime(1641837545)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    sourceNodeName,\n    t\nORDER BY t",
           "refId": "A",
           "round": "0s",
           "skip_comments": true,
@@ -405,7 +363,7 @@
     {
       "datasource": {
         "type": "vertamedia-clickhouse-datasource",
-        "uid": "${DS_CLICKHOUSE}"
+        "uid": "PDEE91DDB90597936"
       },
       "fieldConfig": {
         "defaults": {
@@ -484,7 +442,7 @@
           "database": "default",
           "datasource": {
             "type": "vertamedia-clickhouse-datasource",
-            "uid": "${DS_CLICKHOUSE}"
+            "uid": "PDEE91DDB90597936"
           },
           "dateColDataType": "",
           "dateLoading": false,
@@ -496,9 +454,9 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "hide": false,
           "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    AVG(destinationThroughput),\n    destinationNodeName\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\n\nGROUP BY\n    destinationNodeName,\n    t\nORDER BY t\n",
+          "query": "SELECT\n    $timeSeries as t,\n    AVG(destinationThroughput),\n    destinationNodeName\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    destinationNodeName,\n    t\nORDER BY t\n",
           "queryType": "randomWalk",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(flowEndSeconds), 60) * 60) * 1000 as t,\n    AVG(destinationThroughput),\n    destinationNodeName\nFROM default.antrea\n\nWHERE flowEndSeconds >= toDateTime(1641782923) AND flowEndSeconds <= toDateTime(1641784723)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\n\nGROUP BY\n    destinationNodeName,\n    t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(flowEndSeconds), 60) * 60) * 1000 as t,\n    AVG(destinationThroughput),\n    destinationNodeName\nFROM default.antrea\n\nWHERE flowEndSeconds >= toDateTime(1641835759) AND flowEndSeconds <= toDateTime(1641837559)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    destinationNodeName,\n    t\nORDER BY t",
           "refId": "A",
           "round": "0s",
           "skip_comments": true,
@@ -526,7 +484,7 @@
     {
       "datasource": {
         "type": "vertamedia-clickhouse-datasource",
-        "uid": "${DS_CLICKHOUSE}"
+        "uid": "PDEE91DDB90597936"
       },
       "fieldConfig": {
         "defaults": {
@@ -605,7 +563,7 @@
           "database": "default",
           "datasource": {
             "type": "vertamedia-clickhouse-datasource",
-            "uid": "${DS_CLICKHOUSE}"
+            "uid": "PDEE91DDB90597936"
           },
           "dateColDataType": "",
           "dateLoading": false,
@@ -617,9 +575,9 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "hide": false,
           "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    AVG(reverseDestinationThroughput),\n    destinationNodeName\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\n\nGROUP BY\n    destinationNodeName,\n    t\nORDER BY t\n",
+          "query": "SELECT\n    $timeSeries as t,\n    AVG(reverseDestinationThroughput),\n    destinationNodeName\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    destinationNodeName,\n    t\nORDER BY t\n",
           "queryType": "randomWalk",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(flowEndSeconds), 60) * 60) * 1000 as t,\n    AVG(reverseDestinationThroughput),\n    destinationNodeName\nFROM default.antrea\n\nWHERE flowEndSeconds >= toDateTime(1641780354) AND flowEndSeconds <= toDateTime(1641782154)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\n\nGROUP BY\n    destinationNodeName,\n    t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(flowEndSeconds), 60) * 60) * 1000 as t,\n    AVG(reverseDestinationThroughput),\n    destinationNodeName\nFROM default.antrea\n\nWHERE flowEndSeconds >= toDateTime(1641835793) AND flowEndSeconds <= toDateTime(1641837593)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    destinationNodeName,\n    t\nORDER BY t",
           "refId": "A",
           "round": "0s",
           "skip_comments": true,
@@ -656,7 +614,7 @@
       "dataFormat": "timeseries",
       "datasource": {
         "type": "vertamedia-clickhouse-datasource",
-        "uid": "${DS_CLICKHOUSE}"
+        "uid": "PDEE91DDB90597936"
       },
       "gridPos": {
         "h": 10,
@@ -679,7 +637,7 @@
           "database": "default",
           "datasource": {
             "type": "vertamedia-clickhouse-datasource",
-            "uid": "${DS_CLICKHOUSE}"
+            "uid": "PDEE91DDB90597936"
           },
           "dateColDataType": "",
           "dateLoading": false,
@@ -691,9 +649,9 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "hide": false,
           "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    AVG(sourceThroughput),\n    sourceNodeName\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\n\nGROUP BY\n    sourceNodeName,\n    t\nORDER BY t\n",
+          "query": "SELECT\n    $timeSeries as t,\n    AVG(sourceThroughput),\n    sourceNodeName\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    sourceNodeName,\n    t\nORDER BY t\n",
           "queryType": "randomWalk",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(flowEndSeconds), 60) * 60) * 1000 as t,\n    AVG(sourceThroughput),\n    sourceNodeName\nFROM default.antrea\n\nWHERE flowEndSeconds >= toDateTime(1641780506) AND flowEndSeconds <= toDateTime(1641782306)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\n\nGROUP BY\n    sourceNodeName,\n    t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(flowEndSeconds), 60) * 60) * 1000 as t,\n    AVG(sourceThroughput),\n    sourceNodeName\nFROM default.antrea\n\nWHERE flowEndSeconds >= toDateTime(1641835802) AND flowEndSeconds <= toDateTime(1641837602)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    sourceNodeName,\n    t\nORDER BY t",
           "refId": "A",
           "round": "0s",
           "skip_comments": true,
@@ -743,7 +701,7 @@
       "dataFormat": "timeseries",
       "datasource": {
         "type": "vertamedia-clickhouse-datasource",
-        "uid": "${DS_CLICKHOUSE}"
+        "uid": "PDEE91DDB90597936"
       },
       "gridPos": {
         "h": 10,
@@ -766,7 +724,7 @@
           "database": "default",
           "datasource": {
             "type": "vertamedia-clickhouse-datasource",
-            "uid": "${DS_CLICKHOUSE}"
+            "uid": "PDEE91DDB90597936"
           },
           "dateColDataType": "",
           "dateLoading": false,
@@ -778,9 +736,9 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "hide": false,
           "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    AVG(destinationThroughput),\n    destinationNodeName\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\n\nGROUP BY\n    destinationNodeName,\n    t\nORDER BY t\n",
+          "query": "SELECT\n    $timeSeries as t,\n    AVG(destinationThroughput),\n    destinationNodeName\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    destinationNodeName,\n    t\nORDER BY t\n",
           "queryType": "randomWalk",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(flowEndSeconds), 60) * 60) * 1000 as t,\n    AVG(destinationThroughput),\n    destinationNodeName\nFROM default.antrea\n\nWHERE flowEndSeconds >= toDateTime(1641782791) AND flowEndSeconds <= toDateTime(1641784591)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\n\nGROUP BY\n    destinationNodeName,\n    t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(flowEndSeconds), 60) * 60) * 1000 as t,\n    AVG(destinationThroughput),\n    destinationNodeName\nFROM default.antrea\n\nWHERE flowEndSeconds >= toDateTime(1641835811) AND flowEndSeconds <= toDateTime(1641837611)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    destinationNodeName,\n    t\nORDER BY t",
           "refId": "A",
           "round": "0s",
           "skip_comments": true,
@@ -824,7 +782,19 @@
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "datasource": {
+          "type": "vertamedia-clickhouse-datasource",
+          "uid": "PDEE91DDB90597936"
+        },
+        "filters": [],
+        "hide": 0,
+        "name": "Filter",
+        "skipUrlSync": false,
+        "type": "adhoc"
+      }
+    ]
   },
   "time": {
     "from": "now-30m",
@@ -834,6 +804,6 @@
   "timezone": "",
   "title": "node_throughput_dashboard",
   "uid": "1F56RJh7z",
-  "version": 7,
+  "version": 16,
   "weekStart": ""
 }
