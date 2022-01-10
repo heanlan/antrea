@@ -189,6 +189,8 @@ func createClickHouseClient() *sql.DB {
 			destinationPort UInt16,
 			sourcePodName String,
 			destinationPodName String,
+			sourcePodNamespace String,
+			destinationPodNamespace String,
 			sourceNodeName String,
 			destinationNodeName String,
 			destinationServicePort UInt16, 
@@ -197,18 +199,19 @@ func createClickHouseClient() *sql.DB {
 			ingressNetworkPolicyNamespace String, 
 			egressNetworkPolicyName String, 
 			egressNetworkPolicyNamespace String, 		
-			bytesDelta UInt64,
-			reverseBytesDelta UInt64,
-			bytesTotal UInt64,
+			octetDeltaCount UInt64,
+			reverseOctetDeltaCount UInt64,
+			octetTotalCount UInt64,
 			throughput UInt64,
 			reverseThroughput UInt64,
-			sourceThroughput UInt64,
-			reverseSourceThroughput UInt64,
-			destinationThroughput UInt64,
-			reverseDestinationThroughput UInt64,
+			throughputFromSourceNode UInt64,
+			reverseThroughputFromSourceNode UInt64,
+			throughputFromDestinationNode UInt64,
+			reverseThroughputFromDestinationNode UInt64,
 			flowEndSeconds DateTime,
-			sourceFlowEndSeconds DateTime,
-			destinationFlowEndSeconds DateTime
+			flowEndSecondsFromSourceNode DateTime,
+			flowEndSecondsFromDestinationNode DateTime,
+			flowType UInt8
 		) engine=Memory
 	`)
 

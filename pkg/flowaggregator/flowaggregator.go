@@ -489,6 +489,8 @@ func (fa *flowAggregator) sendFlowKeyRecord(key ipfixintermediate.FlowKey, recor
 			destinationPort, 
 			sourcePodName, 
 			destinationPodName, 
+			sourcePodNamespace,
+			destinationPodNamespace,
 			sourceNodeName,
 			destinationNodeName,
 			destinationServicePort, 
@@ -497,19 +499,20 @@ func (fa *flowAggregator) sendFlowKeyRecord(key ipfixintermediate.FlowKey, recor
 			ingressNetworkPolicyNamespace, 
 			egressNetworkPolicyName, 
 			egressNetworkPolicyNamespace, 
-			bytesDelta, 
-			reverseBytesDelta, 
-			bytesTotal, 
+			octetDeltaCount, 
+			reverseOctetDeltaCount, 
+			octetTotalCount, 
 			throughput, 
 			reverseThroughput, 
-			sourceThroughput, 
-			reverseSourceThroughput, 
-			destinationThroughput, 
-			reverseDestinationThroughput, 
+			throughputFromSourceNode, 
+			reverseThroughputFromSourceNode, 
+			throughputFromDestinationNode, 
+			reverseThroughputFromDestinationNode, 
 			flowEndSeconds,
-			sourceFlowEndSeconds,
-			destinationFlowEndSeconds) 
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+			flowEndSecondsFromSourceNode,
+			flowEndSecondsFromDestinationNode,
+			flowType) 
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 		stmt, _ = tx.Prepare(query)
 	)
 	defer stmt.Close()
@@ -519,6 +522,8 @@ func (fa *flowAggregator) sendFlowKeyRecord(key ipfixintermediate.FlowKey, recor
 	destinationPort, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("destinationTransportPort")
 	sourcePodName, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("sourcePodName")
 	destinationPodName, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("destinationPodName")
+	sourcePodNamespace, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("sourcePodNamespace")
+	destinationPodNamespace, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("destinationPodNamespace")
 	sourceNodeName, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("sourceNodeName")
 	destinationNodeName, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("destinationNodeName")
 	destinationServicePort, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("destinationServicePort")
@@ -539,6 +544,7 @@ func (fa *flowAggregator) sendFlowKeyRecord(key ipfixintermediate.FlowKey, recor
 	flowEndSeconds, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("flowEndSeconds")
 	flowEndSecondsFromSourceNode, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("flowEndSecondsFromSourceNode")
 	flowEndSecondsFromDestiantionNode, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("flowEndSecondsFromDestinationNode")
+	flowType, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("flowType")
 	if _, err := stmt.Exec(
 		sourceIP.GetIPAddressValue().String(),
 		destinationIP.GetIPAddressValue().String(),
@@ -546,6 +552,8 @@ func (fa *flowAggregator) sendFlowKeyRecord(key ipfixintermediate.FlowKey, recor
 		destinationPort.GetUnsigned16Value(),
 		sourcePodName.GetStringValue(),
 		destinationPodName.GetStringValue(),
+		sourcePodNamespace.GetStringValue(),
+		destinationPodNamespace.GetStringValue(),
 		sourceNodeName.GetStringValue(),
 		destinationNodeName.GetStringValue(),
 		destinationServicePort.GetUnsigned16Value(),
@@ -566,6 +574,7 @@ func (fa *flowAggregator) sendFlowKeyRecord(key ipfixintermediate.FlowKey, recor
 		time.Unix(int64(flowEndSeconds.GetUnsigned32Value()), 0),
 		time.Unix(int64(flowEndSecondsFromSourceNode.GetUnsigned32Value()), 0),
 		time.Unix(int64(flowEndSecondsFromDestiantionNode.GetUnsigned32Value()), 0),
+		flowType.GetUnsigned8Value(),
 	); err != nil {
 		klog.Fatal(err)
 	}
