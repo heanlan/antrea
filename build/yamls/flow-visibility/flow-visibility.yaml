@@ -135,11 +135,11 @@ spec:
           - 0
       containers:
         - name: grafana
-          image: grafana/grafana:7.5.2
+          image: grafana/grafana:8.3.3
           imagePullPolicy: IfNotPresent
           env:
             - name: GF_INSTALL_PLUGINS
-              value: "https://github.com/zyiou/grafana-custom-plugin/releases/download/1.0.5/grafana-sankey-plugin.zip;dewyeo-grafana-custom-plugin,vertamedia-clickhouse-datasource"
+              value: "https://github.com/zyiou/grafana-custom-plugin/releases/download/1.0.7/grafana-sankey-plugin.zip;antreaflowvisibility-grafana-sankey-plugin,vertamedia-clickhouse-datasource"
           ports:
             - containerPort: 3000
               name: http-grafana

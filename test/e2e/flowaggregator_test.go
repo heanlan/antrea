@@ -157,7 +157,7 @@ func TestFlowAggregator(t *testing.T) {
 	// Execute teardownFlowAggregator later than teardownTest to ensure that the log
 	// of Flow Aggregator has been exported.
 	defer teardownFlowAggregator(t, data)
-	defer teardownTest(t, data)
+	// defer teardownTest(t, data)
 
 	if testOptions.providerName == "kind" {
 		// Currently, in Kind clusters, OVS userspace datapath does not support
@@ -199,7 +199,7 @@ func testHelper(t *testing.T, data *TestData, podAIPs, podBIPs, podCIPs, podDIPs
 	if err != nil {
 		t.Fatalf("Error when creating perftest Services: %v", err)
 	}
-	defer deletePerftestServices(t, data)
+	// defer deletePerftestServices(t, data)
 	// Wait for the Service to be realized.
 	time.Sleep(3 * time.Second)
 
@@ -212,14 +212,14 @@ func testHelper(t *testing.T, data *TestData, podAIPs, podBIPs, podCIPs, podDIPs
 		np1, np2 := deployK8sNetworkPolicies(t, data, "perftest-a", "perftest-b")
 		defer func() {
 			if np1 != nil {
-				if err = data.deleteNetworkpolicy(np1); err != nil {
-					t.Errorf("Error when deleting network policy: %v", err)
-				}
+				// if err = data.deleteNetworkpolicy(np1); err != nil {
+				// 	t.Errorf("Error when deleting network policy: %v", err)
+				// }
 			}
 			if np2 != nil {
-				if err = data.deleteNetworkpolicy(np2); err != nil {
-					t.Errorf("Error when deleting network policy: %v", err)
-				}
+				// if err = data.deleteNetworkpolicy(np2); err != nil {
+				// 	t.Errorf("Error when deleting network policy: %v", err)
+				// }
 			}
 		}()
 		if !isIPv6 {
@@ -342,10 +342,10 @@ func testHelper(t *testing.T, data *TestData, podAIPs, podBIPs, podCIPs, podDIPs
 		anp1, anp2 := deployAntreaNetworkPolicies(t, data, "perftest-a", "perftest-c")
 		defer func() {
 			if anp1 != nil {
-				k8sUtils.DeleteANP(testNamespace, anp1.Name)
+				// k8sUtils.DeleteANP(testNamespace, anp1.Name)
 			}
 			if anp2 != nil {
-				k8sUtils.DeleteANP(testNamespace, anp2.Name)
+				// k8sUtils.DeleteANP(testNamespace, anp2.Name)
 			}
 		}()
 		if !isIPv6 {
