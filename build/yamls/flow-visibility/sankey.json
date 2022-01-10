@@ -27,7 +27,7 @@
   "panels": [
     {
       "datasource": {
-        "type": "grafana-clickhouse-datasource",
+        "type": "vertamedia-clickhouse-datasource",
         "uid": "PDEE91DDB90597936"
       },
       "gridPos": {
@@ -39,13 +39,28 @@
       "id": 2,
       "targets": [
         {
+          "database": "default",
           "datasource": {
-            "type": "grafana-clickhouse-datasource",
+            "type": "vertamedia-clickhouse-datasource",
             "uid": "PDEE91DDB90597936"
           },
+          "dateColDataType": "",
+          "dateLoading": false,
+          "dateTimeColDataType": "flowEndSeconds",
+          "dateTimeType": "DATETIME",
+          "datetimeLoading": false,
+          "extrapolate": true,
           "format": 1,
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    SUM(bytesDelta), sourcePodName, destinationPodName, destinationIP\nFROM $table\nWHERE $timeFilter\nGROUP BY sourcePodName, destinationPodName, destinationIP\n",
+          "rawQuery": "SELECT\n    SUM(bytesDelta), sourcePodName, destinationPodName, destinationIP\nFROM default.antrea\nWHERE flowEndSeconds >= toDateTime(1641823364) AND flowEndSeconds <= toDateTime(1641844964)\nGROUP BY sourcePodName, destinationPodName, destinationIP",
           "rawSql": "SELECT\n    SUM(bytesDelta) as bytes, sourcePodName, destinationPodName, destinationIP\nFROM antrea\nGROUP BY sourcePodName, destinationPodName, destinationIP",
-          "refId": "A"
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "antrea",
+          "tableLoading": false
         }
       ],
       "title": "Sankey Diagram",
@@ -67,6 +82,6 @@
   "timezone": "",
   "title": "New dashboard",
   "uid": "XknZstT7k",
-  "version": 2,
+  "version": 1,
   "weekStart": ""
 }

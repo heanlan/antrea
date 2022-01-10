@@ -21,8 +21,8 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 6,
-  "iteration": 1641847473616,
+  "id": 5,
+  "iteration": 1641939889562,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -48,18 +48,22 @@
       "targets": [
         {
           "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
           "dateColDataType": "",
           "dateLoading": false,
-          "dateTimeColDataType": "flowEndSeconds",
+          "dateTimeColDataType": "flowEndSecondsFromSourceNode",
           "dateTimeType": "DATETIME",
           "datetimeLoading": false,
           "extrapolate": true,
           "format": "time_series",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n    SUM(throughput), sourceNodeName, destinationNodeName\nFROM $table\n\nWHERE $timeFilter\n\nGROUP BY sourceNodeName, destinationNodeName\n",
+          "query": "SELECT\n    SUM(octetDeltaCount), \n    (sourceNodeName, destinationNodeName) as pair\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourceNodeName != destinationNodeName\nAND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator', 'ipfix')\n\nGROUP BY pair\n",
           "queryType": "randomWalk",
-          "rawQuery": "SELECT\n    SUM(throughput), sourceNodeName, destinationNodeName\nFROM default.antrea\n\nWHERE flowEndSeconds >= toDateTime(1639007546) AND flowEndSeconds <= toDateTime(1639009346)\n\nGROUP BY sourceNodeName, destinationNodeName",
+          "rawQuery": "SELECT\n    SUM(octetDeltaCount), \n    (sourceNodeName, destinationNodeName) as pair\nFROM default.antrea\n\nWHERE flowEndSecondsFromSourceNode >= toDateTime(1641938441) AND flowEndSecondsFromSourceNode <= toDateTime(1641940241)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourceNodeName != destinationNodeName\nAND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator', 'ipfix')\n\nGROUP BY pair",
           "refId": "A",
           "round": "0s",
           "skip_comments": true,
@@ -67,7 +71,7 @@
           "tableLoading": false
         }
       ],
-      "title": "Node Throughput Diagram",
+      "title": "Node Throughput Diagram (Bytes)",
       "type": "antreaflowvisibility-grafana-sankey-plugin"
     },
     {
@@ -105,9 +109,9 @@
           "format": "time_series",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n    SUM(reverseThroughput), \n    (sourceNodeName, destinationNodeName) as pair\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\n\nGROUP BY pair\n",
+          "query": "SELECT\n    SUM(reverseOctetDeltaCount), \n    (sourceNodeName, destinationNodeName) as pair\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourceNodeName != destinationNodeName\nAND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator', 'ipfix')\n\nGROUP BY pair\n",
           "queryType": "randomWalk",
-          "rawQuery": "SELECT\n    SUM(reverseThroughput), \n    (sourceNodeName, destinationNodeName) as pair\nFROM default.antrea\n\nWHERE flowEndSeconds >= toDateTime(1641780996) AND flowEndSeconds <= toDateTime(1641782796)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\n\nGROUP BY pair",
+          "rawQuery": "SELECT\n    SUM(reverseOctetDeltaCount), \n    (sourceNodeName, destinationNodeName) as pair\nFROM default.antrea\n\nWHERE flowEndSeconds >= toDateTime(1641938194) AND flowEndSeconds <= toDateTime(1641939994)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourceNodeName != destinationNodeName\nAND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator', 'ipfix')\n\nGROUP BY pair",
           "refId": "A",
           "round": "0s",
           "skip_comments": true,
@@ -204,7 +208,7 @@
           },
           "dateColDataType": "",
           "dateLoading": false,
-          "dateTimeColDataType": "flowEndSeconds",
+          "dateTimeColDataType": "flowEndSecondsFromSourceNode",
           "dateTimeType": "DATETIME",
           "datetimeLoading": false,
           "extrapolate": true,
@@ -212,9 +216,9 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "hide": false,
           "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    AVG(sourceThroughput),\n    sourceNodeName\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    sourceNodeName,\n    t\nORDER BY t\n",
+          "query": "SELECT\n    $timeSeries as t,\n    AVG(throughputFromSourceNode),\n    sourceNodeName\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator', 'ipfix')\n\nGROUP BY\n    sourceNodeName,\n    t\nORDER BY t\n",
           "queryType": "randomWalk",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(flowEndSeconds), 60) * 60) * 1000 as t,\n    AVG(sourceThroughput),\n    sourceNodeName\nFROM default.antrea\n\nWHERE flowEndSeconds >= toDateTime(1641844754) AND flowEndSeconds <= toDateTime(1641846554)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    sourceNodeName,\n    t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(flowEndSecondsFromSourceNode), 60) * 60) * 1000 as t,\n    AVG(throughputFromSourceNode),\n    sourceNodeName\nFROM default.antrea\n\nWHERE flowEndSecondsFromSourceNode >= toDateTime(1641938254) AND flowEndSecondsFromSourceNode <= toDateTime(1641940054)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator', 'ipfix')\n\nGROUP BY\n    sourceNodeName,\n    t\nORDER BY t",
           "refId": "A",
           "round": "0s",
           "skip_comments": true,
@@ -325,7 +329,7 @@
           },
           "dateColDataType": "",
           "dateLoading": false,
-          "dateTimeColDataType": "flowEndSeconds",
+          "dateTimeColDataType": "flowEndSecondsFromSourceNode",
           "dateTimeType": "DATETIME",
           "datetimeLoading": false,
           "extrapolate": true,
@@ -333,9 +337,9 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "hide": false,
           "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    AVG(reverseSourceThroughput),\n    sourceNodeName\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    sourceNodeName,\n    t\nORDER BY t\n",
+          "query": "SELECT\n    $timeSeries as t,\n    AVG(reverseThroughputFromSourceNode),\n    sourceNodeName\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator', 'ipfix')\n\nGROUP BY\n    sourceNodeName,\n    t\nORDER BY t\n",
           "queryType": "randomWalk",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(flowEndSeconds), 60) * 60) * 1000 as t,\n    AVG(reverseSourceThroughput),\n    sourceNodeName\nFROM default.antrea\n\nWHERE flowEndSeconds >= toDateTime(1641835745) AND flowEndSeconds <= toDateTime(1641837545)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    sourceNodeName,\n    t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(flowEndSecondsFromSourceNode), 60) * 60) * 1000 as t,\n    AVG(reverseThroughputFromSourceNode),\n    sourceNodeName\nFROM default.antrea\n\nWHERE flowEndSecondsFromSourceNode >= toDateTime(1641938316) AND flowEndSecondsFromSourceNode <= toDateTime(1641940116)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator', 'ipfix')\n\nGROUP BY\n    sourceNodeName,\n    t\nORDER BY t",
           "refId": "A",
           "round": "0s",
           "skip_comments": true,
@@ -446,7 +450,7 @@
           },
           "dateColDataType": "",
           "dateLoading": false,
-          "dateTimeColDataType": "flowEndSeconds",
+          "dateTimeColDataType": "flowEndSecondsFromDestinationNode",
           "dateTimeType": "DATETIME",
           "datetimeLoading": false,
           "extrapolate": true,
@@ -454,9 +458,9 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "hide": false,
           "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    AVG(destinationThroughput),\n    destinationNodeName\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    destinationNodeName,\n    t\nORDER BY t\n",
+          "query": "SELECT\n    $timeSeries as t,\n    AVG(throughputFromDestinationNode),\n    destinationNodeName\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator', 'ipfix')\n\nGROUP BY\n    destinationNodeName,\n    t\nORDER BY t\n",
           "queryType": "randomWalk",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(flowEndSeconds), 60) * 60) * 1000 as t,\n    AVG(destinationThroughput),\n    destinationNodeName\nFROM default.antrea\n\nWHERE flowEndSeconds >= toDateTime(1641835759) AND flowEndSeconds <= toDateTime(1641837559)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    destinationNodeName,\n    t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(flowEndSecondsFromDestinationNode), 60) * 60) * 1000 as t,\n    AVG(throughputFromDestinationNode),\n    destinationNodeName\nFROM default.antrea\n\nWHERE flowEndSecondsFromDestinationNode >= toDateTime(1641938373) AND flowEndSecondsFromDestinationNode <= toDateTime(1641940173)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator', 'ipfix')\n\nGROUP BY\n    destinationNodeName,\n    t\nORDER BY t",
           "refId": "A",
           "round": "0s",
           "skip_comments": true,
@@ -567,7 +571,7 @@
           },
           "dateColDataType": "",
           "dateLoading": false,
-          "dateTimeColDataType": "flowEndSeconds",
+          "dateTimeColDataType": "flowEndSecondsFromDestinationNode",
           "dateTimeType": "DATETIME",
           "datetimeLoading": false,
           "extrapolate": true,
@@ -575,9 +579,9 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "hide": false,
           "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    AVG(reverseDestinationThroughput),\n    destinationNodeName\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    destinationNodeName,\n    t\nORDER BY t\n",
+          "query": "SELECT\n    $timeSeries as t,\n    AVG(reverseThroughputFromDestinationNode),\n    destinationNodeName\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator', 'ipfix')\n\nGROUP BY\n    destinationNodeName,\n    t\nORDER BY t\n",
           "queryType": "randomWalk",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(flowEndSeconds), 60) * 60) * 1000 as t,\n    AVG(reverseDestinationThroughput),\n    destinationNodeName\nFROM default.antrea\n\nWHERE flowEndSeconds >= toDateTime(1641835793) AND flowEndSeconds <= toDateTime(1641837593)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    destinationNodeName,\n    t\nORDER BY t",
+          "rawQuery": "SELECT\n    (intDiv(toUInt32(flowEndSecondsFromDestinationNode), 60) * 60) * 1000 as t,\n    AVG(reverseThroughputFromDestinationNode),\n    destinationNodeName\nFROM default.antrea\n\nWHERE flowEndSecondsFromDestinationNode >= toDateTime(1641938395) AND flowEndSecondsFromDestinationNode <= toDateTime(1641940195)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator', 'ipfix')\n\nGROUP BY\n    destinationNodeName,\n    t\nORDER BY t",
           "refId": "A",
           "round": "0s",
           "skip_comments": true,
@@ -601,183 +605,9 @@
       ],
       "transparent": true,
       "type": "timeseries"
-    },
-    {
-      "cards": {},
-      "color": {
-        "cardColor": "#b4ff00",
-        "colorScale": "sqrt",
-        "colorScheme": "interpolateSpectral",
-        "exponent": 0.5,
-        "mode": "spectrum"
-      },
-      "dataFormat": "timeseries",
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 12,
-        "x": 0,
-        "y": 38
-      },
-      "heatmap": {},
-      "hideZeroBuckets": false,
-      "highlightCards": true,
-      "id": 16,
-      "interval": "60s",
-      "legend": {
-        "show": true
-      },
-      "pluginVersion": "7.5.2",
-      "reverseYBuckets": false,
-      "targets": [
-        {
-          "database": "default",
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "dateColDataType": "",
-          "dateLoading": false,
-          "dateTimeColDataType": "flowEndSeconds",
-          "dateTimeType": "DATETIME",
-          "datetimeLoading": false,
-          "extrapolate": true,
-          "format": "time_series",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "hide": false,
-          "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    AVG(sourceThroughput),\n    sourceNodeName\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    sourceNodeName,\n    t\nORDER BY t\n",
-          "queryType": "randomWalk",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(flowEndSeconds), 60) * 60) * 1000 as t,\n    AVG(sourceThroughput),\n    sourceNodeName\nFROM default.antrea\n\nWHERE flowEndSeconds >= toDateTime(1641835802) AND flowEndSeconds <= toDateTime(1641837602)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    sourceNodeName,\n    t\nORDER BY t",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true,
-          "table": "antrea",
-          "tableLoading": false
-        }
-      ],
-      "title": "Average Throughput From Node Acting as Source",
-      "tooltip": {
-        "show": true,
-        "showHistogram": false
-      },
-      "transformations": [
-        {
-          "id": "groupBy",
-          "options": {
-            "fields": {
-              "Time": {
-                "aggregations": [],
-                "operation": "aggregate"
-              }
-            }
-          }
-        }
-      ],
-      "transparent": true,
-      "type": "heatmap",
-      "xAxis": {
-        "show": true
-      },
-      "yAxis": {
-        "format": "short",
-        "logBase": 1,
-        "show": true
-      },
-      "yBucketBound": "auto"
-    },
-    {
-      "cards": {},
-      "color": {
-        "cardColor": "#b4ff00",
-        "colorScale": "sqrt",
-        "colorScheme": "interpolateSpectral",
-        "exponent": 0.5,
-        "mode": "spectrum"
-      },
-      "dataFormat": "timeseries",
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 12,
-        "x": 12,
-        "y": 38
-      },
-      "heatmap": {},
-      "hideZeroBuckets": false,
-      "highlightCards": true,
-      "id": 21,
-      "interval": "60s",
-      "legend": {
-        "show": true
-      },
-      "pluginVersion": "7.5.2",
-      "reverseYBuckets": false,
-      "targets": [
-        {
-          "database": "default",
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "dateColDataType": "",
-          "dateLoading": false,
-          "dateTimeColDataType": "flowEndSeconds",
-          "dateTimeType": "DATETIME",
-          "datetimeLoading": false,
-          "extrapolate": true,
-          "format": "time_series",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "hide": false,
-          "intervalFactor": 1,
-          "query": "SELECT\n    $timeSeries as t,\n    AVG(destinationThroughput),\n    destinationNodeName\nFROM $table\n\nWHERE $timeFilter\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    destinationNodeName,\n    t\nORDER BY t\n",
-          "queryType": "randomWalk",
-          "rawQuery": "SELECT\n    (intDiv(toUInt32(flowEndSeconds), 60) * 60) * 1000 as t,\n    AVG(destinationThroughput),\n    destinationNodeName\nFROM default.antrea\n\nWHERE flowEndSeconds >= toDateTime(1641835811) AND flowEndSeconds <= toDateTime(1641837611)\nAND sourceNodeName != ''\nAND destinationNodeName != ''\nAND sourcePodName NOT LIKE 'chi-clickhouse%'\nAND sourcePodName NOT LIKE 'coredns-%'\nAND sourcePodName NOT LIKE 'ipfix-collector-%'\nAND sourcePodName NOT LIKE 'flow-aggregator-%'\nAND sourcePodName NOT LIKE 'grafana-%'\n\nGROUP BY\n    destinationNodeName,\n    t\nORDER BY t",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true,
-          "table": "antrea",
-          "tableLoading": false
-        }
-      ],
-      "title": "Average Throughput of Node Acting as Destination",
-      "tooltip": {
-        "show": true,
-        "showHistogram": false
-      },
-      "transformations": [
-        {
-          "id": "groupBy",
-          "options": {
-            "fields": {
-              "Time": {
-                "aggregations": [],
-                "operation": "aggregate"
-              }
-            }
-          }
-        }
-      ],
-      "transparent": true,
-      "type": "heatmap",
-      "xAxis": {
-        "show": true
-      },
-      "yAxis": {
-        "format": "short",
-        "logBase": 1,
-        "show": true
-      },
-      "yBucketBound": "auto"
     }
   ],
-  "refresh": "1m",
+  "refresh": "",
   "schemaVersion": 34,
   "style": "dark",
   "tags": [],
@@ -804,6 +634,6 @@
   "timezone": "",
   "title": "node_throughput_dashboard",
   "uid": "1F56RJh7z",
-  "version": 16,
+  "version": 10,
   "weekStart": ""
 }

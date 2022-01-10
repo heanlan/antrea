@@ -139,7 +139,7 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: GF_INSTALL_PLUGINS
-              value: "https://github.com/zyiou/grafana-custom-plugin/releases/download/1.0.7/grafana-sankey-plugin.zip;antreaflowvisibility-grafana-sankey-plugin,vertamedia-clickhouse-datasource"
+              value: "https://github.com/zyiou/grafana-custom-plugin/releases/download/1.0.6/grafana-sankey-plugin.zip;antreaflowvisibility-grafana-sankey-plugin,vertamedia-clickhouse-datasource"
           ports:
             - containerPort: 3000
               name: http-grafana
