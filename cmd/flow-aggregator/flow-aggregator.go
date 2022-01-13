@@ -181,40 +181,6 @@ func createClickHouseClient() *sql.DB {
 		return nil
 	}
 
-	_, err = connect.Exec(`
-		CREATE TABLE IF NOT EXISTS antrea (
-			sourceIP String,
-			destinationIP String,
-			sourcePort UInt16,
-			destinationPort UInt16,
-			sourcePodName String,
-			destinationPodName String,
-			sourcePodNamespace String,
-			destinationPodNamespace String,
-			sourceNodeName String,
-			destinationNodeName String,
-			destinationServicePort UInt16, 
-			destinationServicePortName String, 
-			ingressNetworkPolicyName String, 
-			ingressNetworkPolicyNamespace String, 
-			egressNetworkPolicyName String, 
-			egressNetworkPolicyNamespace String, 		
-			octetDeltaCount UInt64,
-			reverseOctetDeltaCount UInt64,
-			octetTotalCount UInt64,
-			throughput UInt64,
-			reverseThroughput UInt64,
-			throughputFromSourceNode UInt64,
-			reverseThroughputFromSourceNode UInt64,
-			throughputFromDestinationNode UInt64,
-			reverseThroughputFromDestinationNode UInt64,
-			flowEndSeconds DateTime,
-			flowEndSecondsFromSourceNode DateTime,
-			flowEndSecondsFromDestinationNode DateTime,
-			flowType UInt8
-		) engine=Memory
-	`)
-
 	if err != nil {
 		klog.Fatal(err)
 	}

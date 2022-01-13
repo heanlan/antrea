@@ -482,11 +482,11 @@ func (fa *flowAggregator) sendFlowKeyRecord(key ipfixintermediate.FlowKey, recor
 
 	var (
 		tx, _ = fa.dbConnection.Begin()
-		query = `INSERT INTO antrea (
+		query = `INSERT INTO flows (
 			sourceIP, 
 			destinationIP, 
-			sourcePort, 
-			destinationPort, 
+			sourceTransportPort, 
+			destinationTransportPort, 
 			sourcePodName, 
 			destinationPodName, 
 			sourcePodNamespace,
