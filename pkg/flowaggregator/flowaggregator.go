@@ -497,8 +497,14 @@ func (fa *flowAggregator) sendFlowKeyRecord(key ipfixintermediate.FlowKey, recor
 			destinationServicePortName, 
 			ingressNetworkPolicyName, 
 			ingressNetworkPolicyNamespace, 
+			ingressNetworkPolicyType, 
+			ingressNetworkPolicyRuleName,
+			ingressNetworkPolicyRuleAction, 
 			egressNetworkPolicyName, 
 			egressNetworkPolicyNamespace, 
+			egressNetworkPolicyType, 
+			egressNetworkPolicyRuleName,
+			egressNetworkPolicyRuleAction, 
 			octetDeltaCount, 
 			reverseOctetDeltaCount, 
 			octetTotalCount, 
@@ -512,7 +518,7 @@ func (fa *flowAggregator) sendFlowKeyRecord(key ipfixintermediate.FlowKey, recor
 			flowEndSecondsFromSourceNode,
 			flowEndSecondsFromDestinationNode,
 			flowType) 
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 		stmt, _ = tx.Prepare(query)
 	)
 	defer stmt.Close()
@@ -530,8 +536,14 @@ func (fa *flowAggregator) sendFlowKeyRecord(key ipfixintermediate.FlowKey, recor
 	destinationServicePortName, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("destinationServicePortName")
 	ingressNetworkPolicyName, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("ingressNetworkPolicyName")
 	ingressNetworkPolicyNamespace, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("ingressNetworkPolicyNamespace")
+	ingressNetworkPolicyType, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("ingressNetworkPolicyType")
+	ingressNetworkPolicyRuleName, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("ingressNetworkPolicyRuleName")
+	ingressNetworkPolicyRuleAction, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("ingressNetworkPolicyRuleAction")
 	egressNetworkPolicyName, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("egressNetworkPolicyName")
 	egressNetworkPolicyNamespace, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("egressNetworkPolicyNamespace")
+	egressNetworkPolicyType, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("egressNetworkPolicyType")
+	egressNetworkPolicyRuleName, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("egressNetworkPolicyRuleName")
+	egressNetworkPolicyRuleAction, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("egressNetworkPolicyRuleAction")
 	octetDeltaCount, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("octetDeltaCount")
 	reverseOctetDeltaCount, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("reverseOctetDeltaCount")
 	octetTotalCount, _, _ := fa.set.GetRecords()[0].GetInfoElementWithValue("octetTotalCount")
@@ -560,8 +572,14 @@ func (fa *flowAggregator) sendFlowKeyRecord(key ipfixintermediate.FlowKey, recor
 		destinationServicePortName.GetStringValue(),
 		ingressNetworkPolicyName.GetStringValue(),
 		ingressNetworkPolicyNamespace.GetStringValue(),
+		ingressNetworkPolicyType.GetUnsigned8Value(),
+		ingressNetworkPolicyRuleName.GetStringValue(),
+		ingressNetworkPolicyRuleAction.GetUnsigned8Value(),
 		egressNetworkPolicyName.GetStringValue(),
 		egressNetworkPolicyNamespace.GetStringValue(),
+		egressNetworkPolicyType.GetUnsigned8Value(),
+		egressNetworkPolicyRuleName.GetStringValue(),
+		egressNetworkPolicyRuleAction.GetUnsigned8Value(),
 		octetDeltaCount.GetUnsigned64Value(),
 		reverseOctetDeltaCount.GetUnsigned64Value(),
 		octetTotalCount.GetUnsigned64Value(),
