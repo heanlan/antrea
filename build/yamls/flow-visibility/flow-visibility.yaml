@@ -82,6 +82,16 @@ spec:
     path: "/data/grafana"
 ---
 apiVersion: v1
+kind: Secret
+metadata:
+  name: clickhouse-secret
+  namespace: flow-visibility
+type: Opaque
+stringData:
+  username: clickhouse_operator
+  password: clickhouse_operator_password
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: grafana-datasource
@@ -97,8 +107,8 @@ data:
         editable: true
         jsonData:
           useYandexCloudAuthorization: true
-          xHeaderUser: clickhouse_operator
-          xHeaderKey: clickhouse_operator_password
+          xHeaderUser: $CH_USERNAME
+          xHeaderKey: $CH_PASSWORD
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -127,6 +137,16 @@ spec:
           env:
             - name: GF_INSTALL_PLUGINS
               value: "https://github.com/antrea-io/antrea/releases/download/v1.6.0/grafana-sankey-plugin.zip;antreaflowvisibility-grafana-sankey-plugin,vertamedia-clickhouse-datasource"
+            - name: CH_USERNAME
+              valueFrom:
+                secretKeyRef: 
+                  name: clickhouse-secret
+                  key: username
+            - name: CH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: clickhouse-secret
+                  key: password
           ports:
             - containerPort: 3000
               name: http-grafana
