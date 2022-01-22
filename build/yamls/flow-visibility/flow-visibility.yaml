@@ -5,14 +5,6 @@ metadata:
     app: flow-visibility
   name: flow-visibility
 ---
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  labels:
-    app: flow-visibility
-  name: flow-visibility
-  namespace: flow-visibility
----
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -101,14 +93,16 @@ data:
     apiVersion: 1
     datasources:
       - name: ClickHouse
-        type: vertamedia-clickhouse-datasource
+        type: grafana-clickhouse-datasource
         access: proxy
         url: http://clickhouse-clickhouse.flow-visibility.svc:8123
         editable: true
         jsonData:
-          useYandexCloudAuthorization: true
-          xHeaderUser: $CH_USERNAME
-          xHeaderKey: $CH_PASSWORD
+          server: clickhouse-clickhouse.flow-visibility.svc
+          port: 9000
+          username: $CH_USERNAME
+        secureJsonData:
+          password: $CH_PASSWORD
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -136,7 +130,7 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: GF_INSTALL_PLUGINS
-              value: "https://github.com/antrea-io/antrea/releases/download/v1.6.0/grafana-sankey-plugin.zip;antreaflowvisibility-grafana-sankey-plugin,vertamedia-clickhouse-datasource"
+              value: "https://github.com/antrea-io/antrea/releases/download/v1.6.0/grafana-sankey-plugin.zip;antreaflowvisibility-grafana-sankey-plugin,grafana-clickhouse-datasource"
             - name: CH_USERNAME
               valueFrom:
                 secretKeyRef: 
@@ -263,7 +257,6 @@ data:
           trusted UInt8 DEFAULT 0
       ) engine=MergeTree
       ORDER BY (timeInserted, flowEndSeconds);
-
       CREATE MATERIALIZED VIEW flows_pod_view
       ENGINE = SummingMergeTree
       ORDER BY (
@@ -274,9 +267,9 @@ data:
           destinationPodName,
           destinationIP,
           destinationServicePortName,
-          flowType, 
+          flowType,
           sourcePodNamespace)
-      POPULATE 
+      POPULATE
       AS SELECT
           flowEndSeconds,
           flowEndSecondsFromSourceNode,
@@ -285,7 +278,7 @@ data:
           destinationPodName,
           destinationIP,
           destinationServicePortName,
-          flowType, 
+          flowType,
           sourcePodNamespace,
           sum(octetDeltaCount) AS octetDeltaCount,
           sum(reverseOctetDeltaCount) AS reverseOctetDeltaCount,
@@ -304,7 +297,7 @@ data:
           destinationServicePortName,
           flowType,
           sourcePodNamespace;
-      
+
       CREATE MATERIALIZED VIEW flows_node_view
       ENGINE = SummingMergeTree
       ORDER BY (
@@ -314,7 +307,7 @@ data:
           sourceNodeName,
           destinationNodeName,
           sourcePodNamespace)
-      POPULATE 
+      POPULATE
       AS SELECT
           flowEndSeconds,
           flowEndSecondsFromSourceNode,
@@ -327,8 +320,8 @@ data:
           sum(throughput) AS throughput,
           sum(reverseThroughput) AS reverseThroughput,
           sum(throughputFromSourceNode) AS throughputFromSourceNode,
-          sum(reverseThroughputFromSourceNode) AS reverseThroughputFromSourceNode, 
-          sum(throughputFromDestinationNode) AS throughputFromDestinationNode, 
+          sum(reverseThroughputFromSourceNode) AS reverseThroughputFromSourceNode,
+          sum(throughputFromDestinationNode) AS throughputFromDestinationNode,
           sum(reverseThroughputFromDestinationNode) AS reverseThroughputFromDestinationNode
       FROM flows
       GROUP BY
@@ -338,7 +331,6 @@ data:
           sourceNodeName,
           destinationNodeName,
           sourcePodNamespace;
-
       CREATE MATERIALIZED VIEW flows_policy_view
       ENGINE = SummingMergeTree
       ORDER BY (
@@ -350,7 +342,7 @@ data:
           ingressNetworkPolicyName,
           ingressNetworkPolicyRuleAction,
           sourcePodNamespace)
-      POPULATE 
+      POPULATE
       AS SELECT
           flowEndSeconds,
           flowEndSecondsFromSourceNode,
@@ -365,8 +357,8 @@ data:
           sum(throughput) AS throughput,
           sum(reverseThroughput) AS reverseThroughput,
           sum(throughputFromSourceNode) AS throughputFromSourceNode,
-          sum(reverseThroughputFromSourceNode) AS reverseThroughputFromSourceNode, 
-          sum(throughputFromDestinationNode) AS throughputFromDestinationNode, 
+          sum(reverseThroughputFromSourceNode) AS reverseThroughputFromSourceNode,
+          sum(throughputFromDestinationNode) AS throughputFromDestinationNode,
           sum(reverseThroughputFromDestinationNode) AS reverseThroughputFromDestinationNode
       FROM flows
       GROUP BY
@@ -378,9 +370,8 @@ data:
           ingressNetworkPolicyName,
           ingressNetworkPolicyRuleAction,
           sourcePodNamespace;
-
       CREATE TABLE IF NOT EXISTS recommendations (
-          id UUID,
+          id String,
           type String,
           timeCreated DateTime,
           yamls String
