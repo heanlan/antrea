@@ -6,23 +6,57 @@ import Chart from 'react-google-charts';
 interface Props extends PanelProps<SankeyOptions> {}
 
 export const SankeyPanel: React.FC<Props> = ({ options, data, width, height }) => {
-  let result = [['From', 'To', 'Bytes']];
-  let n = data.series.length;
-  for (let i = 0; i < n; i++) {
-    let record = data.series[i].name?.split(',');
-    let source = record![0];
-    let destination = record![1];
-    // avoid cycle in sankey diagram, which is not allowed in Google Charts
-    if (source === destination) {
-      destination = destination + ' ';
-    }
-    if (destination === '') {
-      destination = record![2];
-    }
-    let value = data.series[i].fields[1].state as any;
-    let stats = value.calcs as any;
-    if (stats !== undefined) {
-      result.push([source, destination, stats.sum]);
+  let result = [
+    ['From', 'To', 'Bytes'],
+    ['Source N/A', 'Destination N/A', 1],
+  ];
+  let sources = data.series
+    .map((series) => series.fields.find((field) => field.name === 'source'))
+    .map((field) => {
+      let record = field?.values as any;
+      return record?.buffer;
+    })[0];
+  if (sources !== undefined) {
+    let destinations = data.series
+      .map((series) => series.fields.find((field) => field.name === 'destination'))
+      .map((field) => {
+        let record = field?.values as any;
+        return record?.buffer;
+      })[0];
+    let destinationIPs = data.series
+      .map((series) => series.fields.find((field) => field.name === 'destinationIP'))
+      .map((field) => {
+        let record = field?.values as any;
+        return record?.buffer;
+      })[0];
+    let bytes = data.series
+      .map((series) => series.fields.find((field) => field.name === 'bytes'))
+      .map((field) => {
+        let record = field?.values as any;
+        return record?.buffer;
+      })[0];
+    let n = sources.length;
+    for (let i = 0; i < n; i++) {
+      if (bytes[i] === 0) continue;
+      let record = [];
+      let source = sources[i];
+      let destination = destinations[i];
+      record.push(source);
+      if (destination === '') {
+        record.push(destinationIPs[i]);
+      } else {
+        // Google Chart will not be rendered if source is equal to destination.
+        // Add an extra space to differentiate to-self traffic (e.g. intra-Node).
+        if (source === destination) {
+          destination = destination + ' ';
+        }
+        record.push(destination);
+      }
+      record.push(bytes[i]);
+      if (i === 0) {
+        result = [['From', 'To', 'Bytes']];
+      }
+      result.push(record);
     }
   }
   return (

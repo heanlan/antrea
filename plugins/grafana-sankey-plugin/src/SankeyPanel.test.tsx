@@ -22,7 +22,10 @@ describe('Sankey Diagram test', () => {
     props.width = 600;
     props.height = 600;
     props.options = {};
-    let data = [['From', 'To', 'Bytes']];
+    let data = [
+      ['From', 'To', 'Bytes'],
+      ['Source N/A', 'Destination N/A', 1],
+    ];
     let component = shallow(<SankeyPanel {...props} />);
     expect(
       component.contains(
