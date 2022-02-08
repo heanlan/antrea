@@ -1,9 +1,7 @@
 apiVersion: v1
-kind: Namespace
+kind: ServiceAccount
 metadata:
-  labels:
-    app: flow-visibility
-  name: flow-visibility
+  name: grafana
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -11,7 +9,6 @@ metadata:
   labels:
     app: flow-visibility
   name: grafana-role
-  namespace: flow-visibility
 rules:
   - apiGroups:
       - ""
@@ -28,7 +25,6 @@ metadata:
   labels:
     app: flow-visibility
   name: grafana-role-binding
-  namespace: flow-visibility
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -50,7 +46,6 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: grafana-pvc
-  namespace: flow-visibility
 spec:
   storageClassName: grafana-storage
   accessModes:
@@ -63,7 +58,6 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: grafana-pv
-  namespace: flow-visibility
 spec:
   storageClassName: grafana-storage
   capacity:
@@ -77,7 +71,6 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: clickhouse-secret
-  namespace: flow-visibility
 type: Opaque
 stringData:
   username: clickhouse_operator
@@ -87,7 +80,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: grafana-datasource
-  namespace: flow-visibility
 data:
   datasource.yaml: |-
     apiVersion: 1
@@ -104,13 +96,27 @@ data:
         secureJsonData:
           password: $CH_PASSWORD
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-provider
+data: 
+  dashboard.yaml: |-
+    apiVersion: 1
+    providers:
+      - name: grafana-dashboards
+        folder: ''
+        type: file
+        allowUiUpdates: true
+        options:
+          path: /var/lib/grafana/dashboards
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
     app: grafana
   name: grafana
-  namespace: flow-visibility
 spec:
   selector:
     matchLabels:
@@ -120,6 +126,7 @@ spec:
       labels:
         app: grafana
     spec:
+      serviceAccountName: grafana
       securityContext:
         fsGroup: 472
         supplementalGroups:
@@ -130,7 +137,9 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: GF_INSTALL_PLUGINS
-              value: "https://github.com/antrea-io/antrea/releases/download/v1.6.0/grafana-sankey-plugin.zip;antreaflowvisibility-grafana-sankey-plugin,grafana-clickhouse-datasource"
+            # The url of sankey plugin is for temporary use. 
+            # We will update it once we upload it to antrea S3 storage bucket. 
+              value: "https://github.com/zyiou/grafana-custom-plugin/releases/download/1.0.0/grafana-sankey-plugin.zip;antreaflowvisibility-grafana-sankey-plugin,grafana-clickhouse-datasource 0.12.0"
             - name: CH_USERNAME
               valueFrom:
                 secretKeyRef: 
@@ -172,6 +181,10 @@ spec:
               name: grafana-pv
             - mountPath: /etc/grafana/provisioning/datasources
               name: grafana-datasources
+            - mountPath: /etc/grafana/provisioning/dashboards
+              name: grafana-dashboard-provider
+            - mountPath: /var/lib/grafana/dashboards
+              name: grafana-dashboard-config
       volumes:
         - name: grafana-pv
           persistentVolumeClaim:
@@ -179,12 +192,17 @@ spec:
         - name: grafana-datasources
           configMap:
             name: grafana-datasource
+        - name: grafana-dashboard-provider
+          configMap:
+            name: grafana-dashboard-provider
+        - name: grafana-dashboard-config
+          configMap:
+            name: grafana-dashboard-config
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: grafana
-  namespace: flow-visibility
 spec:
   ports:
     - port: 3000
@@ -199,7 +217,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: clickhouse-mounted-configmap
-  namespace: flow-visibility
 data:
   create_table.sh: |
     #!/bin/bash
@@ -257,6 +274,7 @@ data:
           trusted UInt8 DEFAULT 0
       ) engine=MergeTree
       ORDER BY (timeInserted, flowEndSeconds);
+
       CREATE MATERIALIZED VIEW flows_pod_view
       ENGINE = SummingMergeTree
       ORDER BY (
@@ -268,7 +286,8 @@ data:
           destinationIP,
           destinationServicePortName,
           flowType,
-          sourcePodNamespace)
+          sourcePodNamespace,
+          destinationPodNamespace)
       POPULATE
       AS SELECT
           flowEndSeconds,
@@ -280,6 +299,7 @@ data:
           destinationServicePortName,
           flowType,
           sourcePodNamespace,
+          destinationPodNamespace,
           sum(octetDeltaCount) AS octetDeltaCount,
           sum(reverseOctetDeltaCount) AS reverseOctetDeltaCount,
           sum(throughput) AS throughput,
@@ -296,7 +316,8 @@ data:
           destinationIP,
           destinationServicePortName,
           flowType,
-          sourcePodNamespace;
+          sourcePodNamespace,
+          destinationPodNamespace;
 
       CREATE MATERIALIZED VIEW flows_node_view
       ENGINE = SummingMergeTree
@@ -306,7 +327,8 @@ data:
           flowEndSecondsFromDestinationNode,
           sourceNodeName,
           destinationNodeName,
-          sourcePodNamespace)
+          sourcePodNamespace,
+          destinationPodNamespace)
       POPULATE
       AS SELECT
           flowEndSeconds,
@@ -315,6 +337,7 @@ data:
           sourceNodeName,
           destinationNodeName,
           sourcePodNamespace,
+          destinationPodNamespace,
           sum(octetDeltaCount) AS octetDeltaCount,
           sum(reverseOctetDeltaCount) AS reverseOctetDeltaCount,
           sum(throughput) AS throughput,
@@ -330,7 +353,9 @@ data:
           flowEndSecondsFromDestinationNode,
           sourceNodeName,
           destinationNodeName,
-          sourcePodNamespace;
+          sourcePodNamespace,
+          destinationPodNamespace;
+
       CREATE MATERIALIZED VIEW flows_policy_view
       ENGINE = SummingMergeTree
       ORDER BY (
@@ -341,7 +366,8 @@ data:
           egressNetworkPolicyRuleAction,
           ingressNetworkPolicyName,
           ingressNetworkPolicyRuleAction,
-          sourcePodNamespace)
+          sourcePodNamespace,
+          destinationPodNamespace)
       POPULATE
       AS SELECT
           flowEndSeconds,
@@ -352,6 +378,7 @@ data:
           ingressNetworkPolicyName,
           ingressNetworkPolicyRuleAction,
           sourcePodNamespace,
+          destinationPodNamespace,
           sum(octetDeltaCount) AS octetDeltaCount,
           sum(reverseOctetDeltaCount) AS reverseOctetDeltaCount,
           sum(throughput) AS throughput,
@@ -369,7 +396,9 @@ data:
           egressNetworkPolicyRuleAction,
           ingressNetworkPolicyName,
           ingressNetworkPolicyRuleAction,
-          sourcePodNamespace;
+          sourcePodNamespace,
+          destinationPodNamespace;
+
       CREATE TABLE IF NOT EXISTS recommendations (
           id String,
           type String,
@@ -383,7 +412,8 @@ apiVersion: "clickhouse.altinity.com/v1"
 kind: "ClickHouseInstallation"
 metadata:
   name: clickhouse
-  namespace: flow-visibility
+  labels:
+    app: clickhouse
 spec:
   configuration:
     clusters:
