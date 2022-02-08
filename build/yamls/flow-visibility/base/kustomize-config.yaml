@@ -1,0 +1,5 @@
+# This file defines the resource and the field that Kustomize need to look up for
+# the value of var `CH_CONF`
+varReference:
+- path: spec/templates/podTemplates/spec/volumes/configMap/name
+  kind: ClickHouseInstallation
