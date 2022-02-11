@@ -99,21 +99,21 @@ spec:
     imagePullPolicy: IfNotPresent
     command: ["iperf"]
     args: ["-c", "10.96.0.132", "-p", "5201", "-t", "3000", "-b", "10M"]
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: web-client1-3
-  namespace: antrea-test-1
-  labels:
-    app: web-client-1
-spec:
-  containers:
-  - name: web-client1-3
-    image: zyiou/iperf
-    imagePullPolicy: IfNotPresent
-    command: ["iperf"]
-    args: ["-c", "10.96.0.132", "-p", "5201", "-t", "3000", "-b", "10M"]
+# ---
+# apiVersion: v1
+# kind: Pod
+# metadata:
+#   name: web-client1-3
+#   namespace: antrea-test-1
+#   labels:
+#     app: web-client-1
+# spec:
+#   containers:
+#   - name: web-client1-3
+#     image: zyiou/iperf
+#     imagePullPolicy: IfNotPresent
+#     command: ["iperf"]
+#     args: ["-c", "10.96.0.132", "-p", "5201", "-t", "3000", "-b", "10M"]
 ---
 apiVersion: v1
 kind: Service
@@ -194,21 +194,21 @@ spec:
     imagePullPolicy: IfNotPresent
     command: ["iperf"]
     args: ["-c", "10.96.0.133", "-p", "5201", "-t", "3000", "-b", "15M"]
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: web-client2-3
-  namespace: antrea-test-2
-  labels:
-    app: web-client-2
-spec:
-  containers:
-  - name: web-client2-3
-    image: zyiou/iperf
-    imagePullPolicy: IfNotPresent
-    command: ["iperf"]
-    args: ["-c", "10.96.0.133", "-p", "5201", "-t", "3000", "-b", "15M"]
+# ---
+# apiVersion: v1
+# kind: Pod
+# metadata:
+#   name: web-client2-3
+#   namespace: antrea-test-2
+#   labels:
+#     app: web-client-2
+# spec:
+#   containers:
+#   - name: web-client2-3
+#     image: zyiou/iperf
+#     imagePullPolicy: IfNotPresent
+#     command: ["iperf"]
+#     args: ["-c", "10.96.0.133", "-p", "5201", "-t", "3000", "-b", "15M"]
 ---
 apiVersion: v1
 kind: Service
@@ -283,21 +283,21 @@ spec:
     imagePullPolicy: IfNotPresent
     command: ["iperf"]
     args: ["-c", "10.96.0.134", "-p", "5201", "-t", "3000", "-b", "20M"]
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: web-client3-3
-  namespace: antrea-test-3
-  labels:
-    app: web-client-3
-spec:
-  containers:
-  - name: web-client3-3
-    image: zyiou/iperf
-    imagePullPolicy: IfNotPresent
-    command: ["iperf"]
-    args: ["-c", "10.96.0.134", "-p", "5201", "-t", "3000", "-b", "20M"]
+# ---
+# apiVersion: v1
+# kind: Pod
+# metadata:
+#   name: web-client3-3
+#   namespace: antrea-test-3
+#   labels:
+#     app: web-client-3
+# spec:
+#   containers:
+#   - name: web-client3-3
+#     image: zyiou/iperf
+#     imagePullPolicy: IfNotPresent
+#     command: ["iperf"]
+#     args: ["-c", "10.96.0.134", "-p", "5201", "-t", "3000", "-b", "20M"]
 ---
 apiVersion: v1
 kind: Service
