@@ -40,6 +40,17 @@
       - [Flow Records](#flow-records)
       - [Node Throughput](#node-throughput)
       - [Network Policy](#network-policy)
+- [Clickhouse-Grafana Flow-visibility Solution](#clickhouse-grafana-flow-visibility-solution)
+  - [Purpose](#purpose-1)
+  - [About Clickhouse-Grafana](#about-clickhouse-grafana)
+  - [Deployment Steps](#deployment-steps-2)
+  - [Pre-built Dashboards](#pre-built-dashboards-1)
+    - [Flow Records Dashboard](#flow-records-dashboard)
+    - [Pod-to-Pod Flows Dashboard](#pod-to-pod-flows-dashboard)
+    - [Pod-to-External Flows Dashboard](#pod-to-external-flows-dashboard)
+    - [Pod-to-Service Flows Dashboard](#pod-to-service-flows-dashboard)
+    - [Node-to-Node Flows Dashboard](#node-to-node-flows-dashboard)
+    - [Network-Policy Flows Dashboard](#network-policy-flows-dashboard)
 <!-- /toc -->
 
 ## Overview
@@ -622,3 +633,154 @@ With filters applied:
 
 <img src="https://downloads.antrea.io/static/03022021/flow-visualization-np-2.png" width="900" alt="Flow
 Visualization Network Policy Dashboard">
+
+## Clickhouse-Grafana Flow-visibility Solution
+
+### Purpose
+
+Antrea supports sending IPFIX flow records through the Flow Exporter feature described
+above. The Clickhouse-Grafana Flow-visibility Solution works as the data storage and
+visualization tool for flow records and flow-related information. This document
+provides the guidelines for deploying Clickhouse-Grafana Flow-visibility Solution
+with support for Antrea-specific IPFIX fields in a Kubernetes cluster.
+
+### About Clickhouse-Grafana
+
+[Grafana](https://grafana.com/grafana/) is an open-source platform for monitoring
+and observability. Grafana allows you to query, visualize, alert on and understand
+your metrics. [Clickhouse](https://clickhouse.com/) is an open-source, high performance
+columnar OLAP database management system for real-time analytics using SQL. We use
+Clickhouse as the data storage, and use Grafana as the data visualization and monitoring tool.
+
+### Deployment Steps
+
+The following steps will deploy the Clickhouse-Grafana Flow-visibility Solution
+on an existing Kubernetes cluster, which uses Antrea as the CNI. First step is
+to fetch the necessary resources from the Antrea repository. You can either clone
+the entire repo or download the particular folder using the subversion(svn) utility.
+If the deployed version of Antrea has a release `<TAG>` (e.g. `v0.10.0`), then you
+can use the following command:
+
+```shell
+git clone --depth 1 --branch <TAG> https://github.com/antrea-io/antrea.git && cd antrea/build/yamls/flow-visibility
+or
+svn export https://github.com/antrea-io/antrea/tags/<TAG>/build/yamls/flow-visibility/
+```
+
+If the deployed version of Antrea is the latest version, i.e., built from the main
+branch, then you can use the following command:
+
+```shell
+git clone --depth 1 --branch main https://github.com/antrea-io/antrea.git && cd antrea/build/yamls/flow-visibility
+or
+svn export https://github.com/antrea-io/antrea/trunk/build/yamls/flow-visibility/
+```
+
+To create the required K8s resources in the `flow-visibility` folder and get
+everything up-and-running, run the following commands:
+
+```shell
+./start-flow-visibility.sh
+```
+
+Please refer to the [Flow Aggregator Configuration](#configuration-1) to enable
+the Clickhouse configuration options.
+
+Running the `start-flow-visibility.sh` script will print out:  
+
+```shell
+=== Grafana Service is listening on [NodeIP]:[Grafana_NodePort] ===
+```
+
+Grafana is exposed as a nodePort Service, which can be accessed via `http://[NodeIP]:[Grafana_NodePort]`.
+For the first-time login, please make sure to use the default username:password `admin:admin`.
+
+To stop the Clickhouse-Grafana Flow-visibility Solution, run the following commands:
+
+```shell
+kubectl delete -f flow-visibility.yaml -n flow-visibility
+kubectl delete namespace flow-visibility
+kubectl delete -f https://raw.githubusercontent.com/Altinity/clickhouse-operator/master/deploy/operator/clickhouse-operator-install-bundle.yaml -n kube-system
+```
+
+### Pre-built Dashboards
+
+The following dashboards are pre-built and are recommended for Antrea flow
+visualization. They can be found in the Home page of Grafana, by clicking
+the Magnifier button on the left menu bar.
+<img src="https://downloads.antrea.io/static/02152022/flow-visibility-grafana-intro-1.png" width="900" alt="Grafana Search Dashboards Guide">
+
+#### Flow Records Dashboard
+
+Flow Records Dashboard displays the number of flow records being captured in the
+selected time range. The detailed metadata of each of the records can be found
+in the table below.  
+
+<img src="https://downloads.antrea.io/static/02152022/flow-visibility-flow-records-1.png" width="900" alt="Flow Records Dashboard">
+
+Flow Records Dashboard provides time-range control. The selected time-range will
+be applied to all the panels in the dashboard. This feature is also available for
+all the other pre-built dashboards.
+
+<img src="https://downloads.antrea.io/static/02152022/flow-visibility-flow-records-3.png" width="900" alt="Flow Records Dashboard">
+
+Flow Records Dashboard allows us to add key/value filters that automatically apply
+to all the panels in the dashboard. This feature is also available for all the
+other pre-built dashboards.
+
+<img src="https://downloads.antrea.io/static/02152022/flow-visibility-flow-records-2.png" width="900" alt="Flow Records Dashboard">
+
+Besides of the dashboard-wide filter, Flow Records Dashboard also provides column-based
+filters that applies to each table column.
+
+<img src="https://downloads.antrea.io/static/02152022/flow-visibility-flow-records-4.png" width="900" alt="Flow Records Dashboard">
+
+#### Pod-to-Pod Flows Dashboard
+
+Pod-to-Pod Flows Dashboard shows cumulative bytes and reverse bytes of Pod-to-Pod
+traffic in the selected time range, in the form of Sankey diagram. Corresponding
+source or destination Pod throughput is visualized using the line graphs. Pie charts
+visualize the cumulative traffic grouped by source or destination Pod namespace.
+
+<img src="https://downloads.antrea.io/static/02152022/flow-visibility-pod-to-pod-1.png" width="900" alt="Pod-to-Pod Flows Dashboard">
+
+<img src="https://downloads.antrea.io/static/02152022/flow-visibility-pod-to-pod-2.png" width="900" alt="Pod-to-Pod Flows Dashboard">
+
+#### Pod-to-External Flows Dashboard
+
+Pod-to-External Flows Dashboard has similar visualizations with Pod-to-Pod Flows
+Dashboard, visualizing the Pod-to-External flows. The destination of a traffic
+is represented by the destination IP address.
+
+<img src="https://downloads.antrea.io/static/02152022/flow-visibility-pod-to-external-1.png" width="900" alt="Pod-to-External Flows Dashboard">
+
+<img src="https://downloads.antrea.io/static/02152022/flow-visibility-pod-to-external-2.png" width="900" alt="Pod-to-External Flows Dashboard">
+
+#### Pod-to-Service Flows Dashboard
+
+Pod-to-Service Flows Dashboard shares the similar visualizations with Pod-to-Pod/External
+Flows Dashboard, visualizing the Pod-to-Service flows. The destination of a traffic
+is represented by the destination Service metadata.
+
+<img src="https://downloads.antrea.io/static/02152022/flow-visibility-pod-to-service-1.png" width="900" alt="Pod-to-Service Flows Dashboard">
+
+<img src="https://downloads.antrea.io/static/02152022/flow-visibility-pod-to-service-2.png" width="900" alt="Pod-to-Service Flows Dashboard">
+
+#### Node-to-Node Flows Dashboard
+
+Node-to-Node Flows Dashboard visualizes the Node-to-Node traffic, including intra-node
+and inter-node flows. Cumulative bytes are shown in the Sankey diagrams and pie charts,
+throughput is shown in the line graphs.
+
+<img src="https://downloads.antrea.io/static/02152022/flow-visibility-node-to-node-1.png" width="900" alt="Node-to-Node Flows Dashboard">
+
+<img src="https://downloads.antrea.io/static/02152022/flow-visibility-node-to-node-2.png" width="900" alt="Node-to-Node Flows Dashboard">
+
+#### Network-Policy Flows Dashboard
+
+Network-Policy Flows Dashboard visualizes the traffic under network policies. Currently
+we only support the visualization of network policies with `Allow` action.
+
+<img src="https://downloads.antrea.io/static/02152022/flow-visibility-np-1.png" width="900" alt="Network-Policy Flows Dashboard">
+
+<img src="https://downloads.antrea.io/static/02152022/flow-visibility-np-2.png" width="900" alt="Network-Policy Flows Dashboard">
