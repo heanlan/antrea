@@ -137,9 +137,7 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: GF_INSTALL_PLUGINS
-            # The url of sankey plugin is for temporary use. 
-            # We will update it once we upload it to antrea S3 storage bucket. 
-              value: "https://github.com/zyiou/grafana-custom-plugin/releases/download/1.0.0/grafana-sankey-plugin.zip;antreaflowvisibility-grafana-sankey-plugin,grafana-clickhouse-datasource 0.12.0"
+              value: "https://downloads.antrea.io/artifacts/grafana-custom-plugins/grafana-sankey-plugin-1.0.0.zip;antreaflowvisibility-grafana-sankey-plugin,grafana-clickhouse-datasource 0.12.0"
             - name: CH_USERNAME
               valueFrom:
                 secretKeyRef: 
