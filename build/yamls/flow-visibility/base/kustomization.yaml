@@ -1,0 +1,41 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: flow-visibility
+
+resources:
+- clickhouse.yaml
+- grafana.yaml
+
+configMapGenerator:
+- name: grafana-datasource-provider
+  files:
+  - provisioning/datasources/datasource_provider.yaml
+- name: grafana-dashboard-provider
+  files:
+  - provisioning/dashboards/dashboard_provider.yaml
+- name: clickhouse-mounted-configmap
+  namespace: flow-visibility
+  files:
+  - provisioning/datasources/create_table.sh
+- name: grafana-dashboard-config
+  files:
+   - provisioning/dashboards/flow_records_dashboard.json
+   - provisioning/dashboards/pod_to_pod_dashboard.json
+   - provisioning/dashboards/pod_to_service_dashboard.json
+   - provisioning/dashboards/pod_to_external_dashboard.json
+   - provisioning/dashboards/node_to_node_dashboard.json
+   - provisioning/dashboards/networkpolicy_allow_dashboard.json
+
+# CH_CONF exports the value in `metadata.name` from `ConfigMap` named `clickhouse-mounted-configmap`,
+# which is used for inserting the value to a CRD for an object of kind `ClickHouseInstallation`
+vars:
+- name: CH_CONF
+  objref:
+    kind: ConfigMap
+    name: clickhouse-mounted-configmap
+    apiVersion: v1
+  fieldref:
+    fieldpath: metadata.name
+
+configurations:
+- kustomize-config.yaml

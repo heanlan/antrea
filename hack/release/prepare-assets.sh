@@ -86,4 +86,6 @@ export IMG_NAME=projects.registry.vmware.com/antrea/antrea-windows
 export IMG_NAME=projects.registry.vmware.com/antrea/flow-aggregator
 ./hack/generate-manifest-flow-aggregator.sh --mode release > "$OUTPUT_DIR"/flow-aggregator.yml
 
+./hack/generate-manifest-flow-visibility.sh > "$OUTPUT_DIR"/flow-visibility.yaml
+
 ls "$OUTPUT_DIR" | cat

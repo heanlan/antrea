@@ -1,0 +1,3 @@
+varReference:
+- path: spec/templates/podTemplates/spec/volumes/configMap/name
+  kind: ClickHouseInstallation
