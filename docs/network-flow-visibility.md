@@ -40,9 +40,9 @@
       - [Flow Records](#flow-records)
       - [Node Throughput](#node-throughput)
       - [Network Policy](#network-policy)
-- [Clickhouse-Grafana Flow-visibility Solution](#clickhouse-grafana-flow-visibility-solution)
+- [ClickHouse-Grafana Flow-visibility Solution](#clickhouse-grafana-flow-visibility-solution)
   - [Purpose](#purpose-1)
-  - [About Clickhouse-Grafana](#about-clickhouse-grafana)
+  - [About ClickHouse-Grafana](#about-clickhouse-grafana)
   - [Deployment Steps](#deployment-steps-2)
   - [Pre-built Dashboards](#pre-built-dashboards-1)
     - [Flow Records Dashboard](#flow-records-dashboard)
@@ -51,6 +51,7 @@
     - [Pod-to-Service Flows Dashboard](#pod-to-service-flows-dashboard)
     - [Node-to-Node Flows Dashboard](#node-to-node-flows-dashboard)
     - [Network-Policy Flows Dashboard](#network-policy-flows-dashboard)
+  - [Dashboards Customization](#dashboards-customization)
 <!-- /toc -->
 
 ## Overview
@@ -646,72 +647,100 @@ With filters applied:
 <img src="https://downloads.antrea.io/static/03022021/flow-visualization-np-2.png" width="900" alt="Flow
 Visualization Network Policy Dashboard">
 
-## Clickhouse-Grafana Flow-visibility Solution
+## ClickHouse-Grafana Flow-visibility Solution
 
 ### Purpose
 
 Antrea supports sending IPFIX flow records through the Flow Exporter feature described
-above. The Clickhouse-Grafana Flow-visibility Solution works as the data storage and
+above. The ClickHouse-Grafana Flow-visibility Solution works as the data storage and
 visualization tool for flow records and flow-related information. This document
-provides the guidelines for deploying Clickhouse-Grafana Flow-visibility Solution
+provides the guidelines for deploying ClickHouse-Grafana Flow-visibility Solution
 with support for Antrea-specific IPFIX fields in a Kubernetes cluster.
 
-### About Clickhouse-Grafana
+### About ClickHouse-Grafana
 
 [Grafana](https://grafana.com/grafana/) is an open-source platform for monitoring
 and observability. Grafana allows you to query, visualize, alert on and understand
-your metrics. [Clickhouse](https://clickhouse.com/) is an open-source, high performance
+your metrics. [ClickHouse](https://clickhouse.com/) is an open-source, high performance
 columnar OLAP database management system for real-time analytics using SQL. We use
-Clickhouse as the data storage, and use Grafana as the data visualization and monitoring tool.
+ClickHouse as the data storage, and use Grafana as the data visualization and monitoring tool.
 
 ### Deployment Steps
 
-The following steps will deploy the Clickhouse-Grafana Flow-visibility Solution
-on an existing Kubernetes cluster, which uses Antrea as the CNI. First step is
-to fetch the necessary resources from the Antrea repository. You can either clone
-the entire repo or download the particular folder using the subversion(svn) utility.
-If the deployed version of Antrea has a release `<TAG>` (e.g. `v0.10.0`), then you
-can use the following command:
+To start the ClickHouse-Grafana Flow-visibility Solution, the first step is to
+install ClickHouse Operator, which creates, configures and manages ClickHouse clusters.
+Check the [homepage](https://github.com/Altinity/clickhouse-operator) for more information
+about ClickHouse Operator. Running the following command will install ClickHouse
+Operator into `kube-system` namespace.  
 
-```shell
-git clone --depth 1 --branch <TAG> https://github.com/antrea-io/antrea.git && cd antrea/build/yamls/flow-visibility
-or
-svn export https://github.com/antrea-io/antrea/tags/<TAG>/build/yamls/flow-visibility/
+```bash
+kubectl apply -f https://raw.githubusercontent.com/Altinity/clickhouse-operator/master/deploy/operator/clickhouse-operator-install-bundle.yaml
 ```
 
-If the deployed version of Antrea is the latest version, i.e., built from the main
-branch, then you can use the following command:
+To deploy a released version of ClickHouse-Grafana Flow-visibility Solution, find
+a deployment manifest from the [list of releases](https://github.com/antrea-io/antrea/releases).
+For any given release `<TAG>` (e.g. `v1.6.0`), run the following command:
 
-```shell
-git clone --depth 1 --branch main https://github.com/antrea-io/antrea.git && cd antrea/build/yamls/flow-visibility
-or
-svn export https://github.com/antrea-io/antrea/trunk/build/yamls/flow-visibility/
+```bash
+kubectl apply -f https://github.com/antrea-io/antrea/releases/download/<TAG>/flow-visibility.yaml
 ```
 
-To create the required K8s resources in the `flow-visibility` folder and get
-everything up-and-running, run the following commands:
+To deploy the latest version of ClickHouse-Grafana Flow-visibility Solution (built
+from the main branch), use the checked-in [deployment yaml](/build/yamls/flow-visibility.yaml):
 
-```shell
-./start-flow-visibility.sh
+```bash
+kubectl apply -f https://raw.githubusercontent.com/antrea-io/antrea/main/build/yamls/flow-visibility.yaml
 ```
 
 Please refer to the [Flow Aggregator Configuration](#configuration-1) to enable
-the Clickhouse configuration options.
+the ClickHouse configuration options.
 
-Running the `start-flow-visibility.sh` script will print out:  
+Run the following command to check if ClickHouse and Grafana are deployed properly:
 
-```shell
-=== Grafana Service is listening on [NodeIP]:[Grafana_NodePort] ===
+```bash
+kubectl get all -n flow-visibility                                                               
 ```
 
-Grafana is exposed as a nodePort Service, which can be accessed via `http://[NodeIP]:[Grafana_NodePort]`.
-For the first-time login, please make sure to use the default username:password `admin:admin`.
+The expected results will be like:
 
-To stop the Clickhouse-Grafana Flow-visibility Solution, run the following commands:
+```bash  
+NAME                                  READY   STATUS    RESTARTS   AGE
+pod/chi-clickhouse-clickhouse-0-0-0   1/1     Running   0          1m
+pod/grafana-5c6c5b74f7-x4v5b          1/1     Running   0          1m
+
+NAME                                    TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                         AGE
+service/chi-clickhouse-clickhouse-0-0   ClusterIP      None             <none>        8123/TCP,9000/TCP,9009/TCP      1m
+service/clickhouse-clickhouse           LoadBalancer   10.105.198.192   <pending>     8123:30001/TCP,9000:31044/TCP   1m
+service/grafana                         LoadBalancer   10.97.171.150    <pending>     3000:31171/TCP                  1m
+
+NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/grafana   1/1     1            1           1m
+
+NAME                                 DESIRED   CURRENT   READY   AGE
+replicaset.apps/grafana-5c6c5b74f7   1         1         1       1m
+
+NAME                                             READY   AGE
+statefulset.apps/chi-clickhouse-clickhouse-0-0   1/1     1m
+```
+
+Run the following commands will prints out the IP of the workder node and the NodePort
+that Grafana is listening on:
+
+```bash
+NODE_NAME=$(kubectl get pod -l app=grafana -n flow-visibility -o jsonpath='{.items[0].spec.nodeName}')
+NODE_IP=$(kubectl get nodes ${NODE_NAME} -o jsonpath='{.status.addresses[0].address}')
+GRAFANA_NODEPORT=$(kubectl get svc grafana -n flow-visibility -o jsonpath='{.spec.ports[*].nodePort}')
+echo "=== Grafana Service is listening on ${NODE_IP}:${GRAFANA_NODEPORT} ==="
+```
+
+You can now open the Grafana dashboard in the browser using `http://[NodeIP]:[NodePort]`.
+You should be able to see a Grafana login page. Use `admin` for both the username
+and password to login.
+
+To stop the ClickHouse-Grafana Flow-visibility Solution, run the following commands:
 
 ```shell
-kubectl delete -f flow-visibility.yaml -n flow-visibility
-kubectl delete namespace flow-visibility
+kubectl delete -f flow-visibility.yaml
 kubectl delete -f https://raw.githubusercontent.com/Altinity/clickhouse-operator/master/deploy/operator/clickhouse-operator-install-bundle.yaml -n kube-system
 ```
 
@@ -796,3 +825,32 @@ we only support the visualization of network policies with `Allow` action.
 <img src="https://downloads.antrea.io/static/02152022/flow-visibility-np-1.png" width="900" alt="Network-Policy Flows Dashboard">
 
 <img src="https://downloads.antrea.io/static/02152022/flow-visibility-np-2.png" width="900" alt="Network-Policy Flows Dashboard">
+
+### Dashboards Customization
+
+If you would like to make any changes on any of the pre-built dashboards, or build
+a new dashboard, please follow the [doc](https://grafana.com/docs/grafana/latest/dashboards/export-import/)
+for dashboard export and import. To apply those changes for next time deploying,
+please follow the following steps:
+
+1. Clone the repository. Exported dashboard JSON files should be placed under `antrea/build/yamls/flow-visibility/base/provisioning/dashboards`.
+1. If a new dashboard is added, edit `antrea/build/yamls/flow-visibility/base/kustomization.yaml`
+by adding the file in the following section:
+
+    ```yaml
+    - name: grafana-dashboard-config
+      files:
+      - provisioning/dashboards/flow_records_dashboard.json
+      - provisioning/dashboards/pod_to_pod_dashboard.json
+      - provisioning/dashboards/pod_to_service_dashboard.json
+      - provisioning/dashboards/pod_to_external_dashboard.json
+      - provisioning/dashboards/node_to_node_dashboard.json
+      - provisioning/dashboards/networkpolicy_allow_dashboard.json
+      - provisioning/dashboards/[new_dashboard_name].json
+    ```
+
+1. Generate the new YAML manifest by running:
+
+```bash
+./hack/generate-manifest-flow-visibility.sh > build/yamls/flow-visibility.yaml
+```

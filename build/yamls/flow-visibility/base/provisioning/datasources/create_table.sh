@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-clickhouse client -n <<-EOSQL
+clickhouse client -n -h 127.0.0.1 <<-EOSQL
 
     CREATE TABLE IF NOT EXISTS flows (
         timeInserted DateTime DEFAULT now(),
