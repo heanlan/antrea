@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -e
 clickhouse client -n -h 127.0.0.1 <<-EOSQL
 
