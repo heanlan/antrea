@@ -1,0 +1,327 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: grafana
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app: flow-visibility
+  name: grafana-role
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - services
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: flow-visibility
+  name: grafana-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: grafana-role
+subjects:
+  - kind: ServiceAccount
+    name: grafana
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: grafana-storage
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Delete
+allowVolumeExpansion: True
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-pvc
+spec:
+  storageClassName: grafana-storage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: grafana-pv
+spec:
+  storageClassName: grafana-storage
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/grafana"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: clickhouse-secret
+type: Opaque
+stringData:
+  username: clickhouse_operator
+  password: clickhouse_operator_password
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasource
+data:
+  datasource.yaml: |-
+    apiVersion: 1
+    datasources:
+      - name: ClickHouse
+        type: grafana-clickhouse-datasource
+        access: proxy
+        url: http://clickhouse-clickhouse.flow-visibility.svc:8123
+        editable: true
+        jsonData:
+          server: clickhouse-clickhouse.flow-visibility.svc
+          port: 9000
+          username: $CH_USERNAME
+        secureJsonData:
+          password: $CH_PASSWORD
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-provider
+data: 
+  dashboard.yaml: |-
+    apiVersion: 1
+    providers:
+      - name: grafana-dashboards
+        folder: ''
+        type: file
+        allowUiUpdates: true
+        options:
+          path: /var/lib/grafana/dashboards
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: grafana
+  name: grafana
+spec:
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      serviceAccountName: grafana
+      securityContext:
+        fsGroup: 472
+        supplementalGroups:
+          - 0
+      containers:
+        - name: grafana
+          image: grafana/grafana:8.3.3
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: GF_INSTALL_PLUGINS
+              value: "https://github.com/zyiou/grafana-custom-plugin/releases/download/1.0.0/grafana-sankey-plugin.zip;antreaflowvisibility-grafana-sankey-plugin,grafana-clickhouse-datasource 0.12.0"
+            - name: CH_USERNAME
+              valueFrom:
+                secretKeyRef: 
+                  name: clickhouse-secret
+                  key: username
+            - name: CH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: clickhouse-secret
+                  key: password
+          ports:
+            - containerPort: 3000
+              name: http-grafana
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /robots.txt
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 2
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 3000
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 250m
+              memory: 750Mi
+          volumeMounts:
+            - mountPath: /data
+              name: grafana-pv
+            - mountPath: /etc/grafana/provisioning/datasources
+              name: grafana-datasources
+            - mountPath: /etc/grafana/provisioning/dashboards
+              name: grafana-dashboard-provider
+            - mountPath: /var/lib/grafana/dashboards
+              name: grafana-dashboard-config
+      volumes:
+        - name: grafana-pv
+          persistentVolumeClaim:
+            claimName: grafana-pvc
+        - name: grafana-datasources
+          configMap:
+            name: grafana-datasource
+        - name: grafana-dashboard-provider
+          configMap:
+            name: grafana-dashboard-provider
+        - name: grafana-dashboard-config
+          configMap:
+            name: grafana-dashboard-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+spec:
+  ports:
+    - port: 3000
+      protocol: TCP
+      targetPort: http-grafana
+  selector:
+    app: grafana
+  sessionAffinity: None
+  type: LoadBalancer
+---
+apiVersion: "clickhouse.altinity.com/v1"
+kind: "ClickHouseInstallation"
+metadata:
+  name: clickhouse
+  labels:
+    app: clickhouse
+spec:
+  configuration:
+    clusters:
+      - name: "clickhouse"
+        layout:
+          shardsCount: 1
+          replicasCount: 1
+  defaults:
+    templates:
+      podTemplate: pod-template
+  templates:
+    podTemplates:
+      - name: pod-template
+        spec:
+          containers:
+            - name: clickhouse
+              image: yandex/clickhouse-server:20.9
+              volumeMounts:
+                - name: clickhouse-configmap-volume
+                  mountPath: /docker-entrypoint-initdb.d
+                - name: clickhouse-storage-volume
+                  mountPath: /var/lib/clickhouse
+          volumes:
+            - name: clickhouse-configmap-volume
+              configMap:
+                name: clickhouse-mounted-configmap
+            - name: clickhouse-storage-volume
+              emptyDir:
+                medium: Memory
+                sizeLimit: 2Gi
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: flow-visibility
+  name: clickhouse-monitor
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app: flow-visibility
+  name: clickhouse-monitor-role
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - list
+  - apiGroups:
+      - ""
+    resources:
+      - pods/log
+    verbs:
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: flow-visibility
+  name: clickhouse-monitor-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: clickhouse-monitor-role
+subjects:
+  - kind: ServiceAccount
+    name: clickhouse-monitor
+    namespace: flow-visibility
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    app: clickhouse-monitor
+  name: clickhouse-monitor
+spec:
+  schedule: "* * * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: clickhouse-monitor
+        spec:
+          serviceAccountName: clickhouse-monitor
+          containers:
+          - name: clickhouse-monitor
+            image: hanlan/clickhouse-monitor:v2.0.0
+            imagePullPolicy: Always
+            env:
+              - name: CH_USERNAME
+                valueFrom:
+                  secretKeyRef: 
+                    name: clickhouse-secret
+                    key: username
+              - name: CH_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: clickhouse-secret
+                    key: password
+          restartPolicy: OnFailure
+          
