@@ -128,6 +128,8 @@ clickhouse client -n -h 127.0.0.1 <<-EOSQL
         flowEndSeconds,
         flowEndSecondsFromSourceNode,
         flowEndSecondsFromDestinationNode,
+        sourceIP,
+        destinationIP,
         sourceNodeName,
         destinationNodeName,
         sourcePodNamespace,
@@ -140,6 +142,8 @@ clickhouse client -n -h 127.0.0.1 <<-EOSQL
         flowEndSeconds,
         flowEndSecondsFromSourceNode,
         flowEndSecondsFromDestinationNode,
+        sourceIP,
+        destinationIP,
         sourceNodeName,
         destinationNodeName,
         sourcePodNamespace,
@@ -158,6 +162,8 @@ clickhouse client -n -h 127.0.0.1 <<-EOSQL
         flowEndSeconds,
         flowEndSecondsFromSourceNode,
         flowEndSecondsFromDestinationNode,
+        sourceIP,
+        destinationIP,
         sourceNodeName,
         destinationNodeName,
         sourcePodNamespace,
@@ -174,6 +180,8 @@ clickhouse client -n -h 127.0.0.1 <<-EOSQL
         egressNetworkPolicyRuleAction,
         ingressNetworkPolicyName,
         ingressNetworkPolicyRuleAction,
+        sourceIP,
+        destinationIP,
         sourcePodNamespace,
         destinationPodNamespace)
     TTL timeInserted + INTERVAL 1 HOUR
@@ -188,6 +196,8 @@ clickhouse client -n -h 127.0.0.1 <<-EOSQL
         egressNetworkPolicyRuleAction,
         ingressNetworkPolicyName,
         ingressNetworkPolicyRuleAction,
+        sourceIP,
+        destinationIP,
         sourcePodNamespace,
         destinationPodNamespace,
         sum(octetDeltaCount) AS octetDeltaCount,
@@ -208,6 +218,8 @@ clickhouse client -n -h 127.0.0.1 <<-EOSQL
         egressNetworkPolicyRuleAction,
         ingressNetworkPolicyName,
         ingressNetworkPolicyRuleAction,
+        sourceIP,
+        destinationIP,
         sourcePodNamespace,
         destinationPodNamespace;
 
