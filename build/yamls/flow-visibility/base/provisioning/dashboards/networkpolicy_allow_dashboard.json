@@ -21,8 +21,8 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 5,
-  "iteration": 1644982999763,
+  "id": 1,
+  "iteration": 1649816549712,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -257,7 +257,7 @@
           "query": "SELECT $timeSeries as t, SUM(throughputFromSourceNode), sourcePodName\nFROM $table\nWHERE $timeFilter \nAND flowType IN (1, 2)\nAND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\nGROUP BY sourcePodName, t\nORDER BY t\n",
           "queryType": "sql",
           "rawQuery": "SELECT (intDiv(toUInt32(flowEndSeconds), 60) * 60) * 1000 as t, SUM(throughputFromSourceNode), sourcePodName\nFROM default.flows_pod_view\nWHERE flowEndSeconds >= toDateTime(1642532448) AND flowEndSeconds <= toDateTime(1642534248) \nAND flowType IN (1, 2)\nAND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\nGROUP BY sourcePodName, t\nORDER BY t",
-          "rawSql": "SELECT $__timeInterval(flowEndSeconds) as time, CONCAT(egressNetworkPolicyName, '->', ingressNetworkPolicyName) as pair, SUM(throughput)\nFROM flows_policy_view\nWHERE $__timeFilter(flowEndSeconds) \nAND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator') \nAND (egressNetworkPolicyRuleAction == 1 OR ingressNetworkPolicyRuleAction == 1)\nGROUP BY time, pair\nHAVING SUM(throughput) != 0\nORDER BY time",
+          "rawSql": "SELECT\n    $__timeInterval(flowEndSeconds) as time,\n    CONCAT(egressNetworkPolicyName, '->', ingressNetworkPolicyName) as pair, \n    SUM(throughput)\nFROM (\n    SELECT\n        $__timeInterval(flowEndSeconds) AS flowEndSeconds,\n        sourceIP,\n        destinationIP,\n        egressNetworkPolicyName,\n        ingressNetworkPolicyName,\n        AVG(throughput) AS throughput\n    FROM flows_policy_view\n    WHERE (egressNetworkPolicyRuleAction == 1 OR ingressNetworkPolicyRuleAction == 1)\n    AND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\n    AND destinationPodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\n    AND $__timeFilter(flowEndSeconds)\n    GROUP BY\n        flowEndSeconds,\n        sourceIP,\n        destinationIP,\n        egressNetworkPolicyName,\n        ingressNetworkPolicyName\n    HAVING throughput > 0\n    ORDER BY flowEndSeconds\n)\nGROUP BY\n    time,\n    pair\nORDER BY time",
           "refId": "A",
           "round": "0s",
           "skip_comments": true,
@@ -385,7 +385,7 @@
           "query": "SELECT $timeSeries as t, SUM(throughputFromSourceNode), sourcePodName\nFROM $table\nWHERE $timeFilter \nAND flowType IN (1, 2)\nAND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\nGROUP BY sourcePodName, t\nORDER BY t\n",
           "queryType": "sql",
           "rawQuery": "SELECT (intDiv(toUInt32(flowEndSeconds), 60) * 60) * 1000 as t, SUM(throughputFromSourceNode), sourcePodName\nFROM default.flows_pod_view\nWHERE flowEndSeconds >= toDateTime(1642532448) AND flowEndSeconds <= toDateTime(1642534248) \nAND flowType IN (1, 2)\nAND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\nGROUP BY sourcePodName, t\nORDER BY t",
-          "rawSql": "SELECT $__timeInterval(flowEndSeconds) as time, CONCAT(egressNetworkPolicyName, '->', ingressNetworkPolicyName) as pair, SUM(reverseThroughput)\nFROM flows_policy_view\nWHERE $__timeFilter(time)\nAND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\nAND (egressNetworkPolicyRuleAction == 1 OR ingressNetworkPolicyRuleAction == 1)\nGROUP BY time, pair\nHAVING SUM(reverseThroughput) != 0\nORDER BY time",
+          "rawSql": "SELECT\n    $__timeInterval(flowEndSeconds) as time,\n    CONCAT(egressNetworkPolicyName, '->', ingressNetworkPolicyName) as pair, \n    SUM(reverseThroughput)\nFROM (\n    SELECT\n        $__timeInterval(flowEndSeconds) AS flowEndSeconds,\n        sourceIP,\n        destinationIP,\n        egressNetworkPolicyName,\n        ingressNetworkPolicyName,\n        AVG(reverseThroughput) AS reverseThroughput\n    FROM flows_policy_view\n    WHERE (egressNetworkPolicyRuleAction == 1 OR ingressNetworkPolicyRuleAction == 1)\n    AND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\n    AND destinationPodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\n    AND $__timeFilter(flowEndSeconds)\n    GROUP BY\n        flowEndSeconds,\n        sourceIP,\n        destinationIP,\n        egressNetworkPolicyName,\n        ingressNetworkPolicyName\n    HAVING reverseThroughput > 0\n    ORDER BY flowEndSeconds\n)\nGROUP BY\n    time,\n    pair\nORDER BY time",
           "refId": "A",
           "round": "0s",
           "skip_comments": true,
@@ -513,7 +513,7 @@
           "query": "SELECT $timeSeries as t, SUM(throughputFromSourceNode), sourcePodName\nFROM $table\nWHERE $timeFilter \nAND flowType IN (1, 2)\nAND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\nGROUP BY sourcePodName, t\nORDER BY t\n",
           "queryType": "sql",
           "rawQuery": "SELECT (intDiv(toUInt32(flowEndSeconds), 60) * 60) * 1000 as t, SUM(throughputFromSourceNode), sourcePodName\nFROM default.flows_pod_view\nWHERE flowEndSeconds >= toDateTime(1642532448) AND flowEndSeconds <= toDateTime(1642534248) \nAND flowType IN (1, 2)\nAND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\nGROUP BY sourcePodName, t\nORDER BY t",
-          "rawSql": "SELECT $__timeInterval(flowEndSeconds) as time, egressNetworkPolicyName, SUM(throughput)\nFROM flows_policy_view\nWHERE sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\nAND egressNetworkPolicyName != ''\nAND egressNetworkPolicyRuleAction == 1\nAND $__timeFilter(time)\nGROUP BY time, egressNetworkPolicyName\nHAVING SUM(throughput) != 0\nORDER BY time",
+          "rawSql": "SELECT\n    $__timeInterval(flowEndSecondsFromSourceNode) as time,\n    egressNetworkPolicyName, \n    SUM(throughput)\nFROM (\n    SELECT\n        $__timeInterval(flowEndSecondsFromSourceNode) AS flowEndSecondsFromSourceNode,\n        sourceIP,\n        destinationIP,\n        egressNetworkPolicyName,\n        ingressNetworkPolicyName,\n        AVG(throughput) AS throughput\n    FROM flows_policy_view\n    WHERE egressNetworkPolicyRuleAction == 1\n    AND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\n    AND destinationPodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\n    AND $__timeFilter(flowEndSecondsFromSourceNode)\n    GROUP BY\n        flowEndSecondsFromSourceNode,\n        sourceIP,\n        destinationIP,\n        egressNetworkPolicyName,\n        ingressNetworkPolicyName\n    HAVING throughput > 0\n    ORDER BY flowEndSecondsFromSourceNode\n)\nGROUP BY\n    time,\n    egressNetworkPolicyName\nORDER BY time",
           "refId": "A",
           "round": "0s",
           "skip_comments": true,
@@ -601,7 +601,8 @@
             "uid": "PDEE91DDB90597936"
           },
           "format": 1,
-          "rawSql": "SELECT SUM(octetDeltaCount), egressNetworkPolicyName\nFROM flows_policy_view\nWHERE sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\nAND egressNetworkPolicyName != ''\nAND egressNetworkPolicyRuleAction == 1\nAND $__timeFilter(flowEndSeconds)\nGROUP BY egressNetworkPolicyName\nHAVING SUM(octetDeltaCount) != 0",
+          "queryType": "sql",
+          "rawSql": "SELECT SUM(octetDeltaCount), egressNetworkPolicyName\nFROM flows_policy_view\nWHERE sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\nAND destinationPodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\nAND egressNetworkPolicyRuleAction == 1\nAND $__timeFilter(flowEndSecondsFromSourceNode)\nGROUP BY egressNetworkPolicyName\nHAVING SUM(octetDeltaCount) != 0",
           "refId": "A"
         }
       ],
@@ -706,7 +707,7 @@
           "query": "SELECT $timeSeries as t, SUM(throughputFromSourceNode), sourcePodName\nFROM $table\nWHERE $timeFilter \nAND flowType IN (1, 2)\nAND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\nGROUP BY sourcePodName, t\nORDER BY t\n",
           "queryType": "sql",
           "rawQuery": "SELECT (intDiv(toUInt32(flowEndSeconds), 60) * 60) * 1000 as t, SUM(throughputFromSourceNode), sourcePodName\nFROM default.flows_pod_view\nWHERE flowEndSeconds >= toDateTime(1642532448) AND flowEndSeconds <= toDateTime(1642534248) \nAND flowType IN (1, 2)\nAND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\nGROUP BY sourcePodName, t\nORDER BY t",
-          "rawSql": "SELECT $__timeInterval(flowEndSeconds) as time, ingressNetworkPolicyName, SUM(throughput)\nFROM flows_policy_view\nWHERE sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\nAND ingressNetworkPolicyName != ''\nAND ingressNetworkPolicyRuleAction == 1\nAND $__timeFilter(time)\nGROUP BY time, ingressNetworkPolicyName\nHAVING SUM(throughput) != 0\nORDER BY time",
+          "rawSql": "SELECT\n    $__timeInterval(flowEndSecondsFromDestinationNode) as time,\n    ingressNetworkPolicyName, \n    SUM(throughput)\nFROM (\n    SELECT\n        $__timeInterval(flowEndSecondsFromDestinationNode) AS flowEndSecondsFromDestinationNode,\n        sourceIP,\n        destinationIP,\n        egressNetworkPolicyName,\n        ingressNetworkPolicyName,\n        AVG(throughput) AS throughput\n    FROM flows_policy_view\n    WHERE ingressNetworkPolicyRuleAction == 1\n    AND sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\n    AND destinationPodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\n    AND $__timeFilter(flowEndSecondsFromDestinationNode)\n    GROUP BY\n        flowEndSecondsFromDestinationNode,\n        sourceIP,\n        destinationIP,\n        egressNetworkPolicyName,\n        ingressNetworkPolicyName\n    HAVING throughput > 0\n    ORDER BY flowEndSecondsFromDestinationNode\n)\nGROUP BY\n    time,\n    ingressNetworkPolicyName\nORDER BY time",
           "refId": "A",
           "round": "0s",
           "skip_comments": true,
@@ -794,7 +795,7 @@
             "uid": "PDEE91DDB90597936"
           },
           "format": 1,
-          "rawSql": "SELECT SUM(octetDeltaCount), ingressNetworkPolicyName\nFROM flows_policy_view\nWHERE sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\nAND ingressNetworkPolicyName != ''\nAND ingressNetworkPolicyRuleAction == 1\nAND $__timeFilter(flowEndSeconds)\nGROUP BY ingressNetworkPolicyName\nHAVING SUM(octetDeltaCount) != 0",
+          "rawSql": "SELECT SUM(octetDeltaCount), ingressNetworkPolicyName\nFROM flows_policy_view\nWHERE sourcePodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\nAND destinationPodNamespace NOT IN ('kube-system', 'flow-visibility', 'flow-aggregator')\nAND ingressNetworkPolicyRuleAction == 1\nAND $__timeFilter(flowEndSecondsFromDestinationNode)\nGROUP BY ingressNetworkPolicyName\nHAVING SUM(octetDeltaCount) != 0",
           "refId": "A"
         }
       ],
@@ -837,6 +838,6 @@
   "timezone": "",
   "title": "networkpolicy_allow_dashboard",
   "uid": "kWk0EW1nz",
-  "version": 5,
+  "version": 18,
   "weekStart": ""
 }
