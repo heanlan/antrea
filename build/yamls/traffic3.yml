@@ -69,6 +69,12 @@ spec:
         securityContext:
           capabilities:
             add: ["NET_ADMIN"]
+      nodeSelector:
+        app: control-plane
+      tolerations:
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: "NoSchedule"
 ---
 apiVersion: v1
 kind: Pod
@@ -253,6 +259,12 @@ spec:
         securityContext:
           capabilities:
             add: ["NET_ADMIN"]
+      nodeSelector:
+        app: control-plane
+      tolerations:
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: "NoSchedule"
 ---
 apiVersion: v1
 kind: Pod
