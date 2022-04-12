@@ -573,6 +573,11 @@ func (exp *FlowExporter) exportConn(conn *flowexporter.Connection) error {
 		return err
 	}
 	exp.numDataSetsSent = exp.numDataSetsSent + 1
+	if conn.SourcePodName == "perftest-a" {
+		klog.InfoS("Logging... sendDataSet", "connKey", conn.FlowKey)
+		klog.InfoS("Logging... sendDataSet", "flowEndSeconds", conn.StopTime, "currTime", time.Now(), "totalCount", conn.OriginalBytes, "prevBytes", conn.PrevBytes)
+		klog.Info("\n")
+	}
 	klog.V(4).InfoS("Record for connection sent successfully", "flowKey", conn.FlowKey, "connection", conn)
 	return nil
 }

@@ -106,7 +106,11 @@ func (cs *ConntrackConnectionStore) Poll() ([]int, error) {
 			// Delete the connection if it is ready to delete or it was not exported
 			// in the time period as specified by the stale connection timeout.
 			if conn.ReadyToDelete || time.Since(conn.LastExportTime) >= cs.staleConnectionTimeout {
+				if conn.SourcePodName == "perftest-a" {
+					klog.InfoS("Logging... delete conn ", "source", conn.SourcePodName, "destination", conn.DestinationPodName, "destinationIP", conn.FlowKey.DestinationAddress)
+				}
 				if err := cs.deleteConnWithoutLock(key); err != nil {
+					klog.Info("fail to delete conn")
 					return err
 				}
 			}
@@ -211,6 +215,14 @@ func (cs *ConntrackConnectionStore) AddOrUpdateConn(conn *flowexporter.Connectio
 	if exists {
 		existingConn.IsPresent = true
 		if flowexporter.IsConnectionDying(existingConn) {
+			if existingConn.SourcePodName == "perftest-a" {
+				connKey := flowexporter.NewConnectionKey(existingConn)
+				klog.InfoS("Logging... AddOrUpdateConn exist conn", "connKey", connKey)
+				klog.InfoS("Logging...", "TCPState", existingConn.TCPState)
+				klog.InfoS("Logging...", "conn.StatusFlag&connectionDyingFlag != 0", existingConn.StatusFlag&512 != 0)
+				klog.InfoS("Logging...", "!conn.IsPresent", !existingConn.IsPresent)
+				klog.Info("\n")
+			}
 			return
 		}
 		// Update the necessary fields that are used in generating flow records.
@@ -222,6 +234,10 @@ func (cs *ConntrackConnectionStore) AddOrUpdateConn(conn *flowexporter.Connectio
 		existingConn.ReversePackets = conn.ReversePackets
 		existingConn.TCPState = conn.TCPState
 		existingConn.IsActive = flowexporter.CheckConntrackConnActive(existingConn)
+		if existingConn.SourcePodName == "perftest-a" {
+			klog.InfoS("Logging... AddOrUpdateConn exist conn", "OriginalBytes", existingConn.OriginalBytes, "connKey", connKey)
+			klog.Info("\n")
+		}
 		if existingConn.IsActive {
 			existingItem, exists := cs.expirePriorityQueue.KeyToItem[connKey]
 			if !exists {
@@ -275,11 +291,21 @@ func (cs *ConntrackConnectionStore) GetExpiredConns(expiredConns []flowexporter.
 			// If a conntrack connection is in dying state or connection is not
 			// in the conntrack table, we set the ReadyToDelete flag to true to
 			// do the deletion later.
+			if pqItem.Conn.SourcePodName == "perftest-a" {
+				connKey := flowexporter.NewConnectionKey(pqItem.Conn)
+				klog.InfoS("Logging... GetExpiredConns ", "connKey", connKey)
+				klog.Info("Logging... mark as readyToDelete\n")
+			}
 			pqItem.Conn.ReadyToDelete = true
 		}
 		if pqItem.IdleExpireTime.Before(currTime) {
 			// No packets have been received during the idle timeout interval,
 			// the connection is therefore considered inactive.
+			if pqItem.Conn.SourcePodName == "perftest-a" {
+				connKey := flowexporter.NewConnectionKey(pqItem.Conn)
+				klog.InfoS("Logging... GetExpiredConns ", "source", "connKey", connKey)
+				klog.Info("Logging... mark as inactive\n")
+			}
 			pqItem.Conn.IsActive = false
 		}
 		cs.UpdateConnAndQueue(pqItem, currTime)

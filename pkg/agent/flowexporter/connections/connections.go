@@ -158,6 +158,18 @@ func (cs *connectionStore) UpdateConnAndQueue(pqItem *flowexporter.ItemToExpire,
 	conn.LastExportTime = currTime
 	if conn.ReadyToDelete || !conn.IsActive {
 		cs.expirePriorityQueue.RemoveItemFromMap(conn)
+		if conn.SourcePodName == "perftest-a" {
+			connKey := flowexporter.NewConnectionKey(conn)
+			klog.InfoS("Logging... remove conn from PQ", "connKey", connKey)
+			klog.Info("\n")
+		}
+		connKey := flowexporter.NewConnectionKey(conn)
+		_, exist := cs.expirePriorityQueue.KeyToItem[connKey]
+		if exist {
+			connKey := flowexporter.NewConnectionKey(conn)
+			klog.InfoS("Logging... conn still exist after remove", "connKey", connKey)
+			klog.Info("\n")
+		}
 	} else {
 		// For active connections, we update their "prev" stats fields,
 		// reset active expire time and push back into the PQ.

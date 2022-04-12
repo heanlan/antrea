@@ -192,11 +192,11 @@ data:
     # flowCollector contains external IPFIX or JSON collector related configuration options.
     flowCollector:
       # Enable is the switch to enable exporting flow records to external flow collector.
-      #enable: false
+      enable: true
 
       # Provide the flow collector address as string with format <IP>:<port>[:<proto>], where proto is tcp or udp.
       # If no L4 transport proto is given, we consider tcp as default.
-      #address: ""
+      address: "10.103.18.203:4739:tcp"
 
       # Provide the 32-bit Observation Domain ID which will uniquely identify this instance of the flow
       # aggregator to an external flow collector. If omitted, an Observation Domain ID will be generated
@@ -312,7 +312,7 @@ spec:
               key: password
               name: clickhouse-secret
         image: projects.registry.vmware.com/antrea/flow-aggregator:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         name: flow-aggregator
         ports:
         - containerPort: 4739
