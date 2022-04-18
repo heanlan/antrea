@@ -1,0 +1,152 @@
+I0418 19:28:27.562469       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.5 DestinationAddress:192.168.77.100 Protocol:6 SourcePort:57224 DestinationPort:6443}
+I0418 19:28:27.562568       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.8 DestinationAddress:10.10.0.3 Protocol:6 SourcePort:34344 DestinationPort:5201}
+I0418 19:28:27.562627       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.0.1 DestinationAddress:10.10.1.33 Protocol:6 SourcePort:38641 DestinationPort:4739}
+I0418 19:28:27.562637       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.33 DestinationAddress:10.10.1.31 Protocol:6 SourcePort:52954 DestinationPort:4739}
+I0418 19:28:27.562672       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.17 DestinationAddress:8.8.4.4 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:27.562686       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.12 DestinationAddress:10.10.0.4 Protocol:6 SourcePort:45686 DestinationPort:5201}
+I0418 19:28:27.562693       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.15 DestinationAddress:8.8.4.4 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:27.562700       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.16 DestinationAddress:8.8.8.8 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:27.562709       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.20 DestinationAddress:8.8.4.4 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:27.562715       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.9 DestinationAddress:10.10.1.10 Protocol:6 SourcePort:38954 DestinationPort:5201}
+I0418 19:28:27.562722       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.19 DestinationAddress:1.1.1.1 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:27.562727       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.11 DestinationAddress:10.10.0.2 Protocol:6 SourcePort:43288 DestinationPort:5201}
+I0418 19:28:27.562734       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.9 DestinationAddress:10.10.1.10 Protocol:6 SourcePort:38956 DestinationPort:5201}
+I0418 19:28:27.562741       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.5 DestinationAddress:192.168.77.100 Protocol:6 SourcePort:43552 DestinationPort:6443}
+I0418 19:28:27.562747       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.11 DestinationAddress:10.10.0.2 Protocol:6 SourcePort:43290 DestinationPort:5201}
+I0418 19:28:27.562754       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.2 DestinationAddress:192.168.77.100 Protocol:6 SourcePort:48252 DestinationPort:6443}
+I0418 19:28:27.562762       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.8 DestinationAddress:10.10.0.3 Protocol:6 SourcePort:34346 DestinationPort:5201}
+I0418 19:28:27.562768       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.14 DestinationAddress:8.8.8.8 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:27.562933       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.12 DestinationAddress:10.10.0.4 Protocol:6 SourcePort:45684 DestinationPort:5201}
+I0418 19:28:27.562946       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.33 DestinationAddress:192.168.77.100 Protocol:6 SourcePort:59086 DestinationPort:6443}
+I0418 19:28:27.570060       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.13 DestinationAddress:8.8.8.8 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:27.570108       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.18 DestinationAddress:1.1.1.1 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:27.570114       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.3 DestinationAddress:192.168.77.100 Protocol:6 SourcePort:56978 DestinationPort:6443}
+I0418 19:28:27.577929       1 exporter.go:400] "Logging... while exportConns, conn is Dying" Conn={SourceAddress:10.10.1.5 DestinationAddress:192.168.77.100 Protocol:6 SourcePort:57224 DestinationPort:6443} conn.IsPresent=false
+I0418 19:28:27.578329       1 exporter.go:400] "Logging... while exportConns, conn is Dying" Conn={SourceAddress:10.10.1.20 DestinationAddress:8.8.4.4 Protocol:1 SourcePort:0 DestinationPort:0} conn.IsPresent=false
+I0418 19:28:27.578423       1 exporter.go:400] "Logging... while exportConns, conn is Dying" Conn={SourceAddress:10.10.1.8 DestinationAddress:10.10.0.3 Protocol:6 SourcePort:34346 DestinationPort:5201} conn.IsPresent=false
+I0418 19:28:27.578489       1 exporter.go:400] "Logging... while exportConns, conn is Dying" Conn={SourceAddress:10.10.1.9 DestinationAddress:10.10.1.10 Protocol:6 SourcePort:38956 DestinationPort:5201} conn.IsPresent=false
+I0418 19:28:27.578550       1 exporter.go:400] "Logging... while exportConns, conn is Dying" Conn={SourceAddress:10.10.1.14 DestinationAddress:8.8.8.8 Protocol:1 SourcePort:0 DestinationPort:0} conn.IsPresent=false
+I0418 19:28:27.578601       1 exporter.go:400] "Logging... while exportConns, conn is Dying" Conn={SourceAddress:10.10.1.11 DestinationAddress:10.10.0.2 Protocol:6 SourcePort:43290 DestinationPort:5201} conn.IsPresent=false
+I0418 19:28:27.578652       1 exporter.go:400] "Logging... while exportConns, conn is Dying" Conn={SourceAddress:10.10.0.1 DestinationAddress:10.10.1.33 Protocol:6 SourcePort:38641 DestinationPort:4739} conn.IsPresent=false
+I0418 19:28:27.578756       1 exporter.go:400] "Logging... while exportConns, conn is Dying" Conn={SourceAddress:10.10.1.17 DestinationAddress:8.8.4.4 Protocol:1 SourcePort:0 DestinationPort:0} conn.IsPresent=false
+I0418 19:28:27.578812       1 exporter.go:400] "Logging... while exportConns, conn is Dying" Conn={SourceAddress:10.10.1.18 DestinationAddress:1.1.1.1 Protocol:1 SourcePort:0 DestinationPort:0} conn.IsPresent=false
+I0418 19:28:27.578864       1 exporter.go:400] "Logging... while exportConns, conn is Dying" Conn={SourceAddress:10.10.1.19 DestinationAddress:1.1.1.1 Protocol:1 SourcePort:0 DestinationPort:0} conn.IsPresent=false
+I0418 19:28:27.578921       1 exporter.go:400] "Logging... while exportConns, conn is Dying" Conn={SourceAddress:10.10.1.13 DestinationAddress:8.8.8.8 Protocol:1 SourcePort:0 DestinationPort:0} conn.IsPresent=false
+I0418 19:28:27.578982       1 exporter.go:400] "Logging... while exportConns, conn is Dying" Conn={SourceAddress:10.10.1.12 DestinationAddress:10.10.0.4 Protocol:6 SourcePort:45686 DestinationPort:5201} conn.IsPresent=false
+I0418 19:28:27.579064       1 exporter.go:400] "Logging... while exportConns, conn is Dying" Conn={SourceAddress:10.10.1.15 DestinationAddress:8.8.4.4 Protocol:1 SourcePort:0 DestinationPort:0} conn.IsPresent=false
+I0418 19:28:27.579137       1 exporter.go:400] "Logging... while exportConns, conn is Dying" Conn={SourceAddress:10.10.1.16 DestinationAddress:8.8.8.8 Protocol:1 SourcePort:0 DestinationPort:0} conn.IsPresent=false
+I0418 19:28:27.580791       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.5 43552 192.168.77.100 6443 6] conn.IsDying=false
+I0418 19:28:27.580824       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.20 0 8.8.4.4 0 1] conn.IsDying=false
+I0418 19:28:27.580836       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.8 34346 10.10.0.3 5201 6] conn.IsDying=false
+I0418 19:28:27.580845       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.33 52954 10.10.1.31 4739 6] conn.IsDying=false
+I0418 19:28:27.581559       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.9 38956 10.10.1.10 5201 6] conn.IsDying=false
+I0418 19:28:27.581677       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.14 0 8.8.8.8 0 1] conn.IsDying=false
+I0418 19:28:27.581691       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.9 38954 10.10.1.10 5201 6] conn.IsDying=false
+I0418 19:28:27.581698       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.11 43290 10.10.0.2 5201 6] conn.IsDying=false
+I0418 19:28:27.581706       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.0.1 38641 10.10.1.33 4739 6] conn.IsDying=false
+I0418 19:28:27.581712       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.17 0 8.8.4.4 0 1] conn.IsDying=false
+I0418 19:28:27.581718       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.12 45684 10.10.0.4 5201 6] conn.IsDying=false
+I0418 19:28:27.581725       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.18 0 1.1.1.1 0 1] conn.IsDying=false
+I0418 19:28:27.581732       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.8 34344 10.10.0.3 5201 6] conn.IsDying=false
+I0418 19:28:27.581738       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.19 0 1.1.1.1 0 1] conn.IsDying=false
+I0418 19:28:27.581745       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.33 59086 192.168.77.100 6443 6] conn.IsDying=false
+I0418 19:28:27.581751       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.13 0 8.8.8.8 0 1] conn.IsDying=false
+I0418 19:28:27.581758       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.3 56978 192.168.77.100 6443 6] conn.IsDying=false
+I0418 19:28:27.581765       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.12 45686 10.10.0.4 5201 6] conn.IsDying=false
+I0418 19:28:27.581773       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.15 0 8.8.4.4 0 1] conn.IsDying=false
+I0418 19:28:27.581780       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.11 43288 10.10.0.2 5201 6] conn.IsDying=false
+I0418 19:28:27.581790       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.5 57224 192.168.77.100 6443 6] conn.IsDying=false
+I0418 19:28:27.581796       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.2 48252 192.168.77.100 6443 6] conn.IsDying=false
+I0418 19:28:27.581802       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.16 0 8.8.8.8 0 1] conn.IsDying=false
+I0418 19:28:28.560597       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.11 DestinationAddress:10.10.0.2 Protocol:6 SourcePort:43290 DestinationPort:5201}
+I0418 19:28:28.560635       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.5 DestinationAddress:192.168.77.100 Protocol:6 SourcePort:43552 DestinationPort:6443}
+I0418 19:28:28.560645       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.12 DestinationAddress:10.10.0.4 Protocol:6 SourcePort:45684 DestinationPort:5201}
+I0418 19:28:28.560653       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.33 DestinationAddress:192.168.77.100 Protocol:6 SourcePort:59086 DestinationPort:6443}
+I0418 19:28:28.560661       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.13 DestinationAddress:8.8.8.8 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:28.560669       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.2 DestinationAddress:192.168.77.100 Protocol:6 SourcePort:48252 DestinationPort:6443}
+I0418 19:28:28.560677       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.8 DestinationAddress:10.10.0.3 Protocol:6 SourcePort:34346 DestinationPort:5201}
+I0418 19:28:28.560685       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.14 DestinationAddress:8.8.8.8 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:28.560693       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.18 DestinationAddress:1.1.1.1 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:28.560705       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.3 DestinationAddress:192.168.77.100 Protocol:6 SourcePort:56978 DestinationPort:6443}
+I0418 19:28:28.560712       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.5 DestinationAddress:192.168.77.100 Protocol:6 SourcePort:57224 DestinationPort:6443}
+I0418 19:28:28.560720       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.8 DestinationAddress:10.10.0.3 Protocol:6 SourcePort:34344 DestinationPort:5201}
+I0418 19:28:28.560727       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.12 DestinationAddress:10.10.0.4 Protocol:6 SourcePort:45686 DestinationPort:5201}
+I0418 19:28:28.560734       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.15 DestinationAddress:8.8.4.4 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:28.560773       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.16 DestinationAddress:8.8.8.8 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:28.560781       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.0.1 DestinationAddress:10.10.1.33 Protocol:6 SourcePort:38641 DestinationPort:4739}
+I0418 19:28:28.560793       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.33 DestinationAddress:10.10.1.31 Protocol:6 SourcePort:52954 DestinationPort:4739}
+I0418 19:28:28.560801       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.17 DestinationAddress:8.8.4.4 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:28.560809       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.19 DestinationAddress:1.1.1.1 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:28.560816       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.11 DestinationAddress:10.10.0.2 Protocol:6 SourcePort:43288 DestinationPort:5201}
+I0418 19:28:28.560832       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.20 DestinationAddress:8.8.4.4 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:28.560840       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.9 DestinationAddress:10.10.1.10 Protocol:6 SourcePort:38954 DestinationPort:5201}
+I0418 19:28:28.560847       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.9 DestinationAddress:10.10.1.10 Protocol:6 SourcePort:38956 DestinationPort:5201}
+I0418 19:28:28.564268       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.5 43552 192.168.77.100 6443 6] conn.IsDying=false
+I0418 19:28:28.564538       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.20 0 8.8.4.4 0 1] conn.IsDying=false
+I0418 19:28:28.564674       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.8 34346 10.10.0.3 5201 6] conn.IsDying=false
+I0418 19:28:28.564747       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.33 52954 10.10.1.31 4739 6] conn.IsDying=false
+I0418 19:28:28.564823       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.9 38956 10.10.1.10 5201 6] conn.IsDying=false
+I0418 19:28:28.564896       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.14 0 8.8.8.8 0 1] conn.IsDying=false
+I0418 19:28:28.564971       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.9 38954 10.10.1.10 5201 6] conn.IsDying=false
+I0418 19:28:28.565043       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.11 43290 10.10.0.2 5201 6] conn.IsDying=false
+I0418 19:28:28.565133       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.0.1 38641 10.10.1.33 4739 6] conn.IsDying=false
+I0418 19:28:28.565209       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.17 0 8.8.4.4 0 1] conn.IsDying=false
+I0418 19:28:28.565284       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.12 45684 10.10.0.4 5201 6] conn.IsDying=false
+I0418 19:28:28.565539       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.18 0 1.1.1.1 0 1] conn.IsDying=false
+I0418 19:28:28.565635       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.8 34344 10.10.0.3 5201 6] conn.IsDying=false
+I0418 19:28:28.565713       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.19 0 1.1.1.1 0 1] conn.IsDying=false
+I0418 19:28:28.565780       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.33 59086 192.168.77.100 6443 6] conn.IsDying=false
+I0418 19:28:28.565920       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.13 0 8.8.8.8 0 1] conn.IsDying=false
+I0418 19:28:28.566100       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.3 56978 192.168.77.100 6443 6] conn.IsDying=false
+I0418 19:28:28.566293       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.12 45686 10.10.0.4 5201 6] conn.IsDying=false
+I0418 19:28:28.566416       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.15 0 8.8.4.4 0 1] conn.IsDying=false
+I0418 19:28:28.566482       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.11 43288 10.10.0.2 5201 6] conn.IsDying=false
+I0418 19:28:28.566547       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.5 57224 192.168.77.100 6443 6] conn.IsDying=false
+I0418 19:28:28.566641       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.2 48252 192.168.77.100 6443 6] conn.IsDying=false
+I0418 19:28:28.566706       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.16 0 8.8.8.8 0 1] conn.IsDying=false
+I0418 19:28:29.560764       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.20 DestinationAddress:8.8.4.4 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:29.560797       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.9 DestinationAddress:10.10.1.10 Protocol:6 SourcePort:38954 DestinationPort:5201}
+I0418 19:28:29.560806       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.19 DestinationAddress:1.1.1.1 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:29.560814       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.11 DestinationAddress:10.10.0.2 Protocol:6 SourcePort:43288 DestinationPort:5201}
+I0418 19:28:29.560822       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.9 DestinationAddress:10.10.1.10 Protocol:6 SourcePort:38956 DestinationPort:5201}
+I0418 19:28:29.560831       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.5 DestinationAddress:192.168.77.100 Protocol:6 SourcePort:43552 DestinationPort:6443}
+I0418 19:28:29.560838       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.11 DestinationAddress:10.10.0.2 Protocol:6 SourcePort:43290 DestinationPort:5201}
+I0418 19:28:29.560846       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.2 DestinationAddress:192.168.77.100 Protocol:6 SourcePort:48252 DestinationPort:6443}
+I0418 19:28:29.560854       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.8 DestinationAddress:10.10.0.3 Protocol:6 SourcePort:34346 DestinationPort:5201}
+I0418 19:28:29.560861       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.14 DestinationAddress:8.8.8.8 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:29.560868       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.12 DestinationAddress:10.10.0.4 Protocol:6 SourcePort:45684 DestinationPort:5201}
+I0418 19:28:29.560875       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.33 DestinationAddress:192.168.77.100 Protocol:6 SourcePort:59086 DestinationPort:6443}
+I0418 19:28:29.560882       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.13 DestinationAddress:8.8.8.8 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:29.560890       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.18 DestinationAddress:1.1.1.1 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:29.560897       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.3 DestinationAddress:192.168.77.100 Protocol:6 SourcePort:56978 DestinationPort:6443}
+I0418 19:28:29.560904       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.5 DestinationAddress:192.168.77.100 Protocol:6 SourcePort:57224 DestinationPort:6443}
+I0418 19:28:29.560911       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.8 DestinationAddress:10.10.0.3 Protocol:6 SourcePort:34344 DestinationPort:5201}
+I0418 19:28:29.560918       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.0.1 DestinationAddress:10.10.1.33 Protocol:6 SourcePort:38641 DestinationPort:4739}
+I0418 19:28:29.560926       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.33 DestinationAddress:10.10.1.31 Protocol:6 SourcePort:52954 DestinationPort:4739}
+I0418 19:28:29.560933       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.17 DestinationAddress:8.8.4.4 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:29.560950       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.12 DestinationAddress:10.10.0.4 Protocol:6 SourcePort:45686 DestinationPort:5201}
+I0418 19:28:29.560961       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.15 DestinationAddress:8.8.4.4 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:29.560968       1 conntrack_connections.go:115] "Logging... mark conn IsPresent = false" conn={SourceAddress:10.10.1.16 DestinationAddress:8.8.8.8 Protocol:1 SourcePort:0 DestinationPort:0}
+I0418 19:28:29.565767       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.5 43552 192.168.77.100 6443 6] conn.IsDying=false
+I0418 19:28:29.565987       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.20 0 8.8.4.4 0 1] conn.IsDying=false
+I0418 19:28:29.566108       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.8 34346 10.10.0.3 5201 6] conn.IsDying=false
+I0418 19:28:29.566145       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.33 52954 10.10.1.31 4739 6] conn.IsDying=false
+I0418 19:28:29.566162       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.9 38956 10.10.1.10 5201 6] conn.IsDying=false
+I0418 19:28:29.566177       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.14 0 8.8.8.8 0 1] conn.IsDying=false
+I0418 19:28:29.566192       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.9 38954 10.10.1.10 5201 6] conn.IsDying=false
+I0418 19:28:29.566206       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.11 43290 10.10.0.2 5201 6] conn.IsDying=false
+I0418 19:28:29.566308       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.0.1 38641 10.10.1.33 4739 6] conn.IsDying=false
+I0418 19:28:29.566345       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.17 0 8.8.4.4 0 1] conn.IsDying=false
+I0418 19:28:29.566422       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.12 45684 10.10.0.4 5201 6] conn.IsDying=false
+I0418 19:28:29.566501       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.18 0 1.1.1.1 0 1] conn.IsDying=false
+I0418 19:28:29.566572       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.8 34344 10.10.0.3 5201 6] conn.IsDying=false
+I0418 19:28:29.566606       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.19 0 1.1.1.1 0 1] conn.IsDying=false
+I0418 19:28:29.566673       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.33 59086 192.168.77.100 6443 6] conn.IsDying=false
+I0418 19:28:29.566794       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.13 0 8.8.8.8 0 1] conn.IsDying=false
+I0418 19:28:29.566906       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.3 56978 192.168.77.100 6443 6] conn.IsDying=false
+I0418 19:28:29.566968       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.12 45686 10.10.0.4 5201 6] conn.IsDying=false
+I0418 19:28:29.566997       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.15 0 8.8.4.4 0 1] conn.IsDying=false
+I0418 19:28:29.567013       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.11 43288 10.10.0.2 5201 6] conn.IsDying=false
+I0418 19:28:29.567028       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.5 57224 192.168.77.100 6443 6] conn.IsDying=false
+I0418 19:28:29.567042       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.2 48252 192.168.77.100 6443 6] conn.IsDying=false
+I0418 19:28:29.567056       1 conntrack_connections.go:214] "Logging... addOrUpdateConn" conn=[10.10.1.16 0 8.8.8.8 0 1] conn.IsDying=false
