@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: test
+  labels:
+    app: test
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: iperf3-2
+  namespace: test
+spec:
+  clusterIP: 10.96.1.133
+  selector:
+    app: web-server-2
+  ports:
+    - name: tcp
+      protocol: TCP
+      port: 5201
+      targetPort: 5201
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-server-2
+  namespace: test
+  labels:
+    app: web-server-2
+spec:
+  selector:
+    matchLabels:
+      app: web-server-2
+  template:
+    metadata:
+      labels:
+        app: web-server-2
+    spec:
+      containers:
+      - name: iperf-server-2
+        image: projects.registry.vmware.com/antrea/perftool
+        imagePullPolicy: IfNotPresent
+        command: ["iperf3"]
+        args: ["-s", "-p", "5201"]
+        ports:
+        - containerPort: 5201
+          protocol: TCP
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
+---
+apiVersion: crd.antrea.io/v1alpha1
+kind: ClusterNetworkPolicy
+metadata:
+  name: web-deny-all-2
+spec:
+  priority: 1
+  tier: securityops
+  appliedTo:
+    - podSelector:
+        matchLabels:
+          app: web-server-2
+  ingress:
+    - action: Drop
+      name: drop-all-ingress
+      enableLogging: true
+  egress:
+    - action: Drop
+      name: drop-all-egress
+      enableLogging: true

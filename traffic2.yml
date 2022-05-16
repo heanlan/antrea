@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: alpine0
+  labels:
+    app: alpine0
+spec:
+  containers:
+  - name: alpine
+    image: busybox42/alpine-pod:latest
+    imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: alpine1
+  labels:
+    app: alpine1
+spec:
+  containers:
+  - name: alpine
+    image: busybox42/alpine-pod:latest
+    imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: alpine2
+  labels:
+    app: alpine2
+spec:
+  containers:
+  - name: alpine
+    image: busybox42/alpine-pod:latest
+    imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: alpine3
+  labels:
+    app: alpine3
+spec:
+  containers:
+  - name: alpine
+    image: busybox42/alpine-pod:latest
+    imagePullPolicy: IfNotPresent
+---
+apiVersion: crd.antrea.io/v1alpha1
+kind: ClusterNetworkPolicy
+metadata:
+  name: alpine-deny
+spec:
+  priority: 1
+  tier: securityops
+  appliedTo:
+    - podSelector:
+        matchLabels:
+          app: alpine1
+  ingress:
+    - action: Drop
+      name: drop-all-ingress
+      enableLogging: true
+  egress:
+    - action: Drop
+      name: drop-all-egress
+      enableLogging: true
+---
+apiVersion: crd.antrea.io/v1alpha1
+kind: ClusterNetworkPolicy
+metadata:
+  name: alpine-deny-1
+spec:
+  priority: 1
+  tier: securityops
+  appliedTo:
+    - podSelector:
+        matchLabels:
+          app: alpine3
+  ingress:
+    - action: Drop
+      name: drop-all-ingress-1
+      enableLogging: true
+  egress:
+    - action: Drop
+      name: drop-all-egress-1
+      enableLogging: true
