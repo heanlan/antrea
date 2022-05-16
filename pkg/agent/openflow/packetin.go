@@ -116,7 +116,8 @@ func (c *client) parsePacketIn(featurePacketIn *featureStartPacketIn) {
 		}
 		// Use corresponding handlers subscribed to the reason to handle PacketIn
 		for name, handler := range c.packetInHandlers[featurePacketIn.reason] {
-			klog.V(2).InfoS("Received packetIn", "reason", featurePacketIn.reason, "handler", name)
+			klog.InfoS("Received packetIn", "reason", featurePacketIn.reason, "handler", name)
+			klog.Info("\n")
 			err := handler.HandlePacketIn(pktIn)
 			if err != nil {
 				klog.Errorf("PacketIn handler %s failed to process packet: %+v", name, err)

@@ -52,10 +52,23 @@ func (ds *DenyConnectionStore) RunPeriodicDeletion(stopCh <-chan struct{}) {
 					if err := ds.deleteConnWithoutLock(key); err != nil {
 						return err
 					}
+					klog.Infof("DELETE IF STALE CONN, connKey: %s, conn: %p", key, conn)
+					klog.Info("\n")
+					for k, v := range ds.connectionStore.Connections {
+						klog.InfoS("deny conn store", "key", k)
+						klog.Infof("deny conn store, conn: %p", v)
+						klog.InfoS("deny conn store", "flowkey", v.FlowKey)
+						klog.InfoS("deny conn store", "val", v)
+						klog.Info("\n")
+					}
 				}
 				return nil
 			}
+			klog.Info("acquire ds lock")
+			klog.Info("\n")
 			ds.ForAllConnectionsDo(deleteIfStaleConn)
+			klog.Info("release ds lock")
+			klog.Info("\n")
 			klog.V(2).Infof("Stale connections in the Deny Connection Store are successfully deleted.")
 		}
 	}
@@ -65,11 +78,15 @@ func (ds *DenyConnectionStore) RunPeriodicDeletion(stopCh <-chan struct{}) {
 // or adds a new connection with the resolved K8s metadata.
 func (ds *DenyConnectionStore) AddOrUpdateConn(conn *flowexporter.Connection, timeSeen time.Time, bytes uint64) {
 	connKey := flowexporter.NewConnectionKey(conn)
+	klog.Infof("ADD OR UPDATE, connKey: %s, conn: %p, flowKey: %v", connKey, conn, conn.FlowKey)
+	klog.Info("\n")
 	ds.mutex.Lock()
 	defer ds.mutex.Unlock()
 
-	if _, exist := ds.connections[connKey]; exist {
+	if _, exist := ds.Connections[connKey]; exist {
 		if conn.ReadyToDelete {
+			klog.Infof("conn is readyToDelete, skip update, connKey: %s, conn: %p", connKey, conn)
+			klog.Info("\n")
 			return
 		}
 		conn.OriginalBytes += bytes
@@ -78,8 +95,12 @@ func (ds *DenyConnectionStore) AddOrUpdateConn(conn *flowexporter.Connection, ti
 		conn.IsActive = true
 		existingItem, exists := ds.expirePriorityQueue.KeyToItem[connKey]
 		if !exists {
+			klog.Infof("conn does not exist in KeyToItem map, connKey: %s, conn: %p", connKey, conn)
+			klog.Info("\n")
 			ds.expirePriorityQueue.AddItemToQueue(connKey, conn)
 		} else {
+			klog.Infof("update existing conn in PQ, connKey: %s, conn: %p", connKey, conn)
+			klog.Info("\n")
 			ds.connectionStore.expirePriorityQueue.Update(existingItem, existingItem.ActiveExpireTime,
 				time.Now().Add(ds.connectionStore.expirePriorityQueue.IdleFlowTimeout))
 		}
@@ -95,9 +116,11 @@ func (ds *DenyConnectionStore) AddOrUpdateConn(conn *flowexporter.Connection, ti
 		ds.fillServiceInfo(conn, serviceStr)
 		metrics.TotalDenyConnections.Inc()
 		conn.IsActive = true
-		ds.connections[connKey] = conn
+		ds.Connections[connKey] = conn
 		ds.expirePriorityQueue.AddItemToQueue(connKey, conn)
 		klog.V(4).InfoS("New deny connection added", "connection", conn)
+		klog.InfoS("add new conn, connKey: %s, conn: %p", connKey, conn)
+		klog.Info("\n")
 	}
 }
 
@@ -110,17 +133,34 @@ func (ds *DenyConnectionStore) GetExpiredConns(expiredConns []flowexporter.Conne
 			break
 		}
 		expiredConns = append(expiredConns, *pqItem.Conn)
+
 		if pqItem.IdleExpireTime.Before(currTime) {
 			// If a deny connection item is idle time out, we set the ReadyToDelete
 			// flag to true to do the deletion later.
+			// klog.InfoS("readyToDelete", "conn", pqItem.Conn.FlowKey, "idle", pqItem.IdleExpireTime, "curr", currTime)
+			// klog.Infof("readyToDelete, conn: %p", pqItem.Conn)
+			// klog.Infof("pqItem: %p", pqItem)
+			// klog.Info("\n")
 			pqItem.Conn.ReadyToDelete = true
 		}
 		if pqItem.Conn.OriginalPackets <= pqItem.Conn.PrevPackets {
 			// If a deny connection doesn't have increase in packet count,
 			// we consider the connection to be inactive.
 			pqItem.Conn.IsActive = false
+			// klog.Infof("item no longer active: %p\n", pqItem)
 		}
 		ds.UpdateConnAndQueue(pqItem, currTime)
+
+		// if pqItem.Conn.ReadyToDelete == true || pqItem.Conn.IsActive == false {
+		// 	klog.Infof("remove item from map: %p\n", pqItem)
+		// }
+		for k, v := range ds.connectionStore.Connections {
+			klog.InfoS("deny conn store", "key", k)
+			klog.Infof("deny conn store, conn: %p", v)
+			klog.InfoS("deny conn store", "flowkey", v.FlowKey)
+			klog.InfoS("deny conn store", "val", v)
+			klog.Info("\n")
+		}
 	}
 	return expiredConns, ds.connectionStore.expirePriorityQueue.GetExpiryFromExpirePriorityQueue()
 }
@@ -128,11 +168,11 @@ func (ds *DenyConnectionStore) GetExpiredConns(expiredConns []flowexporter.Conne
 // deleteConnWithoutLock deletes the connection from the connection map given
 // the connection key without grabbing the lock. Caller is expected to grab lock.
 func (ds *DenyConnectionStore) deleteConnWithoutLock(connKey flowexporter.ConnectionKey) error {
-	_, exists := ds.connections[connKey]
+	_, exists := ds.Connections[connKey]
 	if !exists {
 		return fmt.Errorf("connection with key %v doesn't exist in map", connKey)
 	}
-	delete(ds.connections, connKey)
+	delete(ds.Connections, connKey)
 	metrics.TotalDenyConnections.Dec()
 	return nil
 }

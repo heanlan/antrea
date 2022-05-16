@@ -27,7 +27,7 @@ import (
 const minExpiryTime = 100 * time.Millisecond
 
 type ExpirePriorityQueue struct {
-	items             []*flowexporter.ItemToExpire
+	Items             []*flowexporter.ItemToExpire
 	ActiveFlowTimeout time.Duration
 	IdleFlowTimeout   time.Duration
 	KeyToItem         map[flowexporter.ConnectionKey]*flowexporter.ItemToExpire
@@ -35,7 +35,7 @@ type ExpirePriorityQueue struct {
 
 func NewExpirePriorityQueue(activeFlowTimeout time.Duration, idleFlowTimeout time.Duration) *ExpirePriorityQueue {
 	return &ExpirePriorityQueue{
-		items:             make([]*flowexporter.ItemToExpire, 0),
+		Items:             make([]*flowexporter.ItemToExpire, 0),
 		ActiveFlowTimeout: activeFlowTimeout,
 		IdleFlowTimeout:   idleFlowTimeout,
 		KeyToItem:         make(map[flowexporter.ConnectionKey]*flowexporter.ItemToExpire),
@@ -43,14 +43,14 @@ func NewExpirePriorityQueue(activeFlowTimeout time.Duration, idleFlowTimeout tim
 }
 
 func (pq *ExpirePriorityQueue) Len() int {
-	return len(pq.items)
+	return len(pq.Items)
 }
 
 func (pq *ExpirePriorityQueue) minExpireTime(i int) time.Time {
-	if pq.items[i].ActiveExpireTime.Before(pq.items[i].IdleExpireTime) {
-		return pq.items[i].ActiveExpireTime
+	if pq.Items[i].ActiveExpireTime.Before(pq.Items[i].IdleExpireTime) {
+		return pq.Items[i].ActiveExpireTime
 	} else {
-		return pq.items[i].IdleExpireTime
+		return pq.Items[i].IdleExpireTime
 	}
 }
 
@@ -59,23 +59,23 @@ func (pq *ExpirePriorityQueue) Less(i, j int) bool {
 }
 
 func (pq *ExpirePriorityQueue) Swap(i, j int) {
-	pq.items[i], pq.items[j] = pq.items[j], pq.items[i]
-	pq.items[i].Index = i
-	pq.items[j].Index = j
+	pq.Items[i], pq.Items[j] = pq.Items[j], pq.Items[i]
+	pq.Items[i].Index = i
+	pq.Items[j].Index = j
 }
 
 func (pq *ExpirePriorityQueue) Push(x interface{}) {
-	n := len((*pq).items)
+	n := len((*pq).Items)
 	item := x.(*flowexporter.ItemToExpire)
 	item.Index = n
-	(*pq).items = append((*pq).items, item)
+	(*pq).Items = append((*pq).Items, item)
 }
 
 func (pq *ExpirePriorityQueue) Pop() interface{} {
-	n := len((*pq).items)
-	item := ((*pq).items)[n-1]
+	n := len((*pq).Items)
+	item := ((*pq).Items)[n-1]
 	item.Index = -1
-	(*pq).items = ((*pq).items)[0:(n - 1)]
+	(*pq).Items = ((*pq).Items)[0:(n - 1)]
 	return item
 }
 
@@ -85,7 +85,7 @@ func (pq *ExpirePriorityQueue) Peek() *flowexporter.ItemToExpire {
 	if pq.Len() == 0 {
 		return nil
 	}
-	return pq.items[0]
+	return pq.Items[0]
 }
 
 // Update modifies the priority of an Item in the queue.

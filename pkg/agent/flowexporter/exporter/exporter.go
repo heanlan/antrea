@@ -243,7 +243,11 @@ func (exp *FlowExporter) sendFlowRecords() (time.Duration, error) {
 	currTime := time.Now()
 	var expireTime1, expireTime2 time.Duration
 	exp.expiredConns, expireTime1 = exp.conntrackConnStore.GetExpiredConns(exp.expiredConns, currTime, maxConnsToExport)
+	klog.Info("acquire ds lock")
+	klog.Info("\n")
 	exp.expiredConns, expireTime2 = exp.denyConnStore.GetExpiredConns(exp.expiredConns, currTime, maxConnsToExport)
+	klog.Info("release ds lock")
+	klog.Info("\n")
 	// Select the shorter time out among two connection stores to do the next round of export.
 	nextExpireTime := getMinTime(expireTime1, expireTime2)
 	for i := range exp.expiredConns {

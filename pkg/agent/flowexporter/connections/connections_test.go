@@ -84,7 +84,7 @@ func TestConnectionStore_ForAllConnectionsDo(t *testing.T) {
 	connStore := NewConnectionStore(mockIfaceStore, nil, testFlowExporterOptions)
 	// Add flows to the Connection store
 	for i, flow := range testFlows {
-		connStore.connections[*testFlowKeys[i]] = flow
+		connStore.Connections[*testFlowKeys[i]] = flow
 	}
 
 	resetTwoFields := func(key flowexporter.ConnectionKey, conn *flowexporter.Connection) error {
@@ -114,23 +114,23 @@ func TestConnectionStore_DeleteConnWithoutLock(t *testing.T) {
 		FlowKey: tuple,
 	}
 	connKey := flowexporter.NewConnectionKey(conn)
-	denyConnStore.connections[connKey] = conn
+	denyConnStore.Connections[connKey] = conn
 
 	// For testing purposes, set the metric
 	metrics.TotalDenyConnections.Set(1)
 	denyConnStore.deleteConnWithoutLock(connKey)
 	_, exists := denyConnStore.GetConnByKey(connKey)
 	assert.Equal(t, false, exists, "connection should be deleted in connection store")
-	checkDenyConnectionMetrics(t, len(denyConnStore.connections))
+	checkDenyConnectionMetrics(t, len(denyConnStore.Connections))
 
 	// test on conntrack connection store
 	mockConnDumper := connectionstest.NewMockConnTrackDumper(ctrl)
 	conntrackConnStore := NewConntrackConnectionStore(mockConnDumper, true, false, nil, mockIfaceStore, nil, testFlowExporterOptions)
-	conntrackConnStore.connections[connKey] = conn
+	conntrackConnStore.Connections[connKey] = conn
 
 	metrics.TotalAntreaConnectionsInConnTrackTable.Set(1)
 	conntrackConnStore.deleteConnWithoutLock(connKey)
 	_, exists = conntrackConnStore.GetConnByKey(connKey)
 	assert.Equal(t, false, exists, "connection should be deleted in connection store")
-	checkAntreaConnectionMetrics(t, len(conntrackConnStore.connections))
+	checkAntreaConnectionMetrics(t, len(conntrackConnStore.Connections))
 }

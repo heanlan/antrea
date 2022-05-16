@@ -37,6 +37,14 @@ func (c *Controller) HandlePacketIn(pktIn *ofctrl.PacketIn) error {
 		return errors.New("empty packetin for Antrea Policy")
 	}
 
+	for k, v := range c.DenyConnStore.Connections {
+		klog.InfoS("deny conn store", "key", k)
+		klog.Infof("deny conn store, conn: %p", v)
+		klog.InfoS("deny conn store", "flowkey", v.FlowKey)
+		klog.InfoS("deny conn store", "val", v)
+		klog.Info("\n")
+	}
+
 	matches := pktIn.GetMatches()
 	// Get custom reasons in this packet-in.
 	match := getMatchRegField(matches, openflow.CustomReasonField)
@@ -110,6 +118,8 @@ func (c *Controller) storeDenyConnection(pktIn *ofctrl.PacketIn) error {
 	if err != nil {
 		return fmt.Errorf("error in parsing packetin: %v", err)
 	}
+	klog.InfoS("STORE DENY CONN", "packet", packet)
+	klog.Info("\n")
 
 	// Get 5-tuple information
 	tuple := flowexporter.Tuple{
@@ -132,8 +142,23 @@ func (c *Controller) storeDenyConnection(pktIn *ofctrl.PacketIn) error {
 	denyConn.DestinationServicePort = tuple.DestinationPort
 
 	// No need to obtain connection info again if it already exists in denyConnectionStore.
-	if conn, exist := c.denyConnStore.GetConnByKey(flowexporter.NewConnectionKey(&denyConn)); exist {
-		c.denyConnStore.AddOrUpdateConn(conn, time.Now(), uint64(packet.IPLength))
+	connKey := flowexporter.NewConnectionKey(&denyConn)
+	if conn, exist := c.DenyConnStore.GetConnByKey(connKey); exist {
+		klog.Infof("STORE EXIST DENY CONN, connKey: %s, denyConn flowKey: %v, conn: %p, flowKey: %s", connKey, denyConn.FlowKey, conn, conn.FlowKey)
+		klog.Info("\n")
+		klog.Info("acquire ds lock")
+		klog.Info("\n")
+		c.DenyConnStore.AddOrUpdateConn(conn, time.Now(), uint64(packet.IPLength))
+		klog.Info("release ds lock")
+		klog.Info("\n")
+
+		for k, v := range c.DenyConnStore.Connections {
+			klog.InfoS("deny conn store", "key", k)
+			klog.Infof("deny conn store, conn: %p", v)
+			klog.InfoS("deny conn store", "flowkey", v.FlowKey)
+			klog.InfoS("deny conn store", "val", v)
+			klog.Info("\n")
+		}
 		return nil
 	}
 
@@ -188,7 +213,22 @@ func (c *Controller) storeDenyConnection(pktIn *ofctrl.PacketIn) error {
 			denyConn.EgressNetworkPolicyRuleAction = flowexporter.RuleActionToUint8(disposition)
 		}
 	}
-	c.denyConnStore.AddOrUpdateConn(&denyConn, time.Now(), uint64(packet.IPLength))
+	klog.Infof("STORE NEW DENY CONN, denyConn flowKey: %v, conn: %v", denyConn.FlowKey, denyConn)
+	klog.Info("\n")
+	klog.Info("acquire ds lock")
+	klog.Info("\n")
+	c.DenyConnStore.AddOrUpdateConn(&denyConn, time.Now(), uint64(packet.IPLength))
+	klog.Info("release ds lock")
+	klog.Info("\n")
+
+	for k, v := range c.DenyConnStore.Connections {
+		klog.InfoS("deny conn store", "key", k)
+		klog.Infof("deny conn store, conn: %p", v)
+		klog.InfoS("deny conn store", "flowkey", v.FlowKey)
+		klog.InfoS("deny conn store", "val", v)
+		klog.Info("\n")
+	}
+
 	return nil
 }
 

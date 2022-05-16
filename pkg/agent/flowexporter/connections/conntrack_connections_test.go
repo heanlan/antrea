@@ -295,7 +295,7 @@ func TestConnectionStore_DeleteConnectionByKey(t *testing.T) {
 	connStore := NewConntrackConnectionStore(nil, true, false, nil, mockIfaceStore, nil, testFlowExporterOptions)
 	// Add flows to the connection store.
 	for i, flow := range testFlows {
-		connStore.connections[*testFlowKeys[i]] = flow
+		connStore.Connections[*testFlowKeys[i]] = flow
 	}
 	// Delete the connections in connection store.
 	for i := 0; i < len(testFlows); i++ {
@@ -303,7 +303,7 @@ func TestConnectionStore_DeleteConnectionByKey(t *testing.T) {
 		assert.Nil(t, err, "DeleteConnectionByKey should return nil")
 		_, exists := connStore.GetConnByKey(*testFlowKeys[i])
 		assert.Equal(t, exists, false, "connection should be deleted in connection store")
-		checkAntreaConnectionMetrics(t, len(connStore.connections))
+		checkAntreaConnectionMetrics(t, len(connStore.Connections))
 	}
 }
 

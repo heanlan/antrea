@@ -78,7 +78,7 @@ func TestDenyConnectionStore_AddOrUpdateConn(t *testing.T) {
 	assert.Equal(t, ok, true, "deny connection should be there in deny connection store")
 	assert.Equal(t, expConn, *actualConn, "deny connections should be equal")
 	assert.Equal(t, 1, denyConnStore.connectionStore.expirePriorityQueue.Len(), "Length of the expire priority queue should be 1")
-	checkDenyConnectionMetrics(t, len(denyConnStore.connections))
+	checkDenyConnectionMetrics(t, len(denyConnStore.Connections))
 
 	denyConnStore.AddOrUpdateConn(&testFlow, refTime.Add(-(time.Second * 10)), uint64(60))
 	expConn.OriginalBytes = uint64(120)
@@ -89,7 +89,7 @@ func TestDenyConnectionStore_AddOrUpdateConn(t *testing.T) {
 	assert.Equal(t, expConn, *actualConn, "deny connections should be equal")
 	assert.True(t, actualConn.IsActive)
 	assert.Equal(t, 1, denyConnStore.connectionStore.expirePriorityQueue.Len())
-	checkDenyConnectionMetrics(t, len(denyConnStore.connections))
+	checkDenyConnectionMetrics(t, len(denyConnStore.Connections))
 }
 
 func checkDenyConnectionMetrics(t *testing.T, numConns int) {

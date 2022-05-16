@@ -18,9 +18,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
-
 	"antrea.io/antrea/pkg/agent/flowexporter"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestExpirePriorityQueue(t *testing.T) {
@@ -40,7 +39,7 @@ func TestExpirePriorityQueue(t *testing.T) {
 			IdleExpireTime:   value[1],
 			Index:            key,
 		}
-		testPriorityQueue.items = append(testPriorityQueue.items, item)
+		testPriorityQueue.Items = append(testPriorityQueue.Items, item)
 	}
 	heap.Init(testPriorityQueue)
 

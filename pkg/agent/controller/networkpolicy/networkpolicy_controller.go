@@ -104,8 +104,8 @@ type Controller struct {
 	addressGroupWatcher   *watcher
 	fullSyncGroup         sync.WaitGroup
 	ifaceStore            interfacestore.InterfaceStore
-	// denyConnStore is for storing deny connections for flow exporter.
-	denyConnStore *connections.DenyConnectionStore
+	// DenyConnStore is for storing deny connections for flow exporter.
+	DenyConnStore *connections.DenyConnectionStore
 }
 
 // NewNetworkPolicyController returns a new *Controller.
@@ -416,7 +416,7 @@ func (c *Controller) GetControllerConnectionStatus() bool {
 }
 
 func (c *Controller) SetDenyConnStore(denyConnStore *connections.DenyConnectionStore) {
-	c.denyConnStore = denyConnStore
+	c.DenyConnStore = denyConnStore
 }
 
 // Run begins watching and processing Antrea AddressGroups, AppliedToGroups

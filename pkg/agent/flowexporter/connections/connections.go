@@ -34,7 +34,7 @@ const (
 )
 
 type connectionStore struct {
-	connections            map[flowexporter.ConnectionKey]*flowexporter.Connection
+	Connections            map[flowexporter.ConnectionKey]*flowexporter.Connection
 	ifaceStore             interfacestore.InterfaceStore
 	antreaProxier          proxy.Proxier
 	expirePriorityQueue    *priorityqueue.ExpirePriorityQueue
@@ -47,7 +47,7 @@ func NewConnectionStore(
 	proxier proxy.Proxier,
 	o *flowexporter.FlowExporterOptions) connectionStore {
 	return connectionStore{
-		connections:            make(map[flowexporter.ConnectionKey]*flowexporter.Connection),
+		Connections:            make(map[flowexporter.ConnectionKey]*flowexporter.Connection),
 		ifaceStore:             ifaceStore,
 		antreaProxier:          proxier,
 		expirePriorityQueue:    priorityqueue.NewExpirePriorityQueue(o.ActiveFlowTimeout, o.IdleFlowTimeout),
@@ -59,7 +59,7 @@ func NewConnectionStore(
 func (cs *connectionStore) GetConnByKey(connKey flowexporter.ConnectionKey) (*flowexporter.Connection, bool) {
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
-	conn, found := cs.connections[connKey]
+	conn, found := cs.Connections[connKey]
 	return conn, found
 }
 
@@ -67,7 +67,7 @@ func (cs *connectionStore) GetConnByKey(connKey flowexporter.ConnectionKey) (*fl
 func (cs *connectionStore) ForAllConnectionsDo(callback flowexporter.ConnectionMapCallBack) error {
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
-	for k, v := range cs.connections {
+	for k, v := range cs.Connections {
 		err := callback(k, v)
 		if err != nil {
 			klog.Errorf("Callback execution failed for flow with key: %v, conn: %v, k, v: %v", k, v, err)
@@ -82,7 +82,7 @@ func (cs *connectionStore) ForAllConnectionsDo(callback flowexporter.ConnectionM
 func (cs *connectionStore) AddConnToMap(connKey *flowexporter.ConnectionKey, conn *flowexporter.Connection) {
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
-	cs.connections[*connKey] = conn
+	cs.Connections[*connKey] = conn
 }
 
 func (cs *connectionStore) fillPodInfo(conn *flowexporter.Connection) {

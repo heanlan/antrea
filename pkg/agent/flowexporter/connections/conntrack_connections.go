@@ -207,7 +207,7 @@ func (cs *ConntrackConnectionStore) AddOrUpdateConn(conn *flowexporter.Connectio
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
 
-	existingConn, exists := cs.connections[connKey]
+	existingConn, exists := cs.Connections[connKey]
 	if exists {
 		existingConn.IsPresent = true
 		if flowexporter.IsConnectionDying(existingConn) {
@@ -256,7 +256,7 @@ func (cs *ConntrackConnectionStore) AddOrUpdateConn(conn *flowexporter.Connectio
 		metrics.TotalAntreaConnectionsInConnTrackTable.Inc()
 		conn.IsActive = true
 		// Add new antrea connection to connection store and PQ.
-		cs.connections[connKey] = conn
+		cs.Connections[connKey] = conn
 		cs.expirePriorityQueue.AddItemToQueue(connKey, conn)
 		klog.V(4).InfoS("New Antrea flow added", "connection", conn)
 	}
@@ -290,11 +290,11 @@ func (cs *ConntrackConnectionStore) GetExpiredConns(expiredConns []flowexporter.
 // deleteConnWithoutLock deletes the connection from the connection map given
 // the connection key without grabbing the lock. Caller is expected to grab lock.
 func (cs *ConntrackConnectionStore) deleteConnWithoutLock(connKey flowexporter.ConnectionKey) error {
-	_, exists := cs.connections[connKey]
+	_, exists := cs.Connections[connKey]
 	if !exists {
 		return fmt.Errorf("connection with key %v doesn't exist in map", connKey)
 	}
-	delete(cs.connections, connKey)
+	delete(cs.Connections, connKey)
 	metrics.TotalAntreaConnectionsInConnTrackTable.Dec()
 	return nil
 }
