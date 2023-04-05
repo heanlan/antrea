@@ -59,9 +59,9 @@ spec:
     spec:
       containers:
       - name: iperf-server-1
-        image: zyiou/iperf
+        image: projects.registry.vmware.com/antrea/perftool
         imagePullPolicy: IfNotPresent
-        command: ["iperf"]
+        command: ["iperf3"]
         args: ["-s", "-p", "5201"]
         ports:
         - containerPort: 5201
@@ -69,12 +69,6 @@ spec:
         securityContext:
           capabilities:
             add: ["NET_ADMIN"]
-      nodeSelector:
-        app: control-plane
-      tolerations:
-      - key: "node-role.kubernetes.io/master"
-        operator: "Exists"
-        effect: "NoSchedule"
 ---
 apiVersion: v1
 kind: Pod
@@ -86,40 +80,10 @@ metadata:
 spec:
   containers:
   - name: web-client1-1
-    image: zyiou/iperf
+    image: projects.registry.vmware.com/antrea/perftool
     imagePullPolicy: IfNotPresent
-    command: ["iperf"]
-    args: ["-c", "10.96.0.132", "-p", "5201", "-t", "3000", "-b", "10M"]
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: web-client1-2
-  namespace: antrea-test-1
-  labels:
-    app: web-client-1
-spec:
-  containers:
-  - name: web-client1-2
-    image: zyiou/iperf
-    imagePullPolicy: IfNotPresent
-    command: ["iperf"]
-    args: ["-c", "10.96.0.132", "-p", "5201", "-t", "3000", "-b", "10M"]
-# ---
-# apiVersion: v1
-# kind: Pod
-# metadata:
-#   name: web-client1-3
-#   namespace: antrea-test-1
-#   labels:
-#     app: web-client-1
-# spec:
-#   containers:
-#   - name: web-client1-3
-#     image: zyiou/iperf
-#     imagePullPolicy: IfNotPresent
-#     command: ["iperf"]
-#     args: ["-c", "10.96.0.132", "-p", "5201", "-t", "3000", "-b", "10M"]
+    command: ["iperf3"]
+    args: ["-c", "10.96.0.132", "-t", "30000", "-b", "1M"]
 ---
 apiVersion: v1
 kind: Service
@@ -154,9 +118,9 @@ spec:
     spec:
       containers:
       - name: iperf-server-2
-        image: zyiou/iperf
+        image: projects.registry.vmware.com/antrea/perftool
         imagePullPolicy: IfNotPresent
-        command: ["iperf"]
+        command: ["iperf3"]
         args: ["-s", "-p", "5201"]
         ports:
         - containerPort: 5201
@@ -164,12 +128,12 @@ spec:
         securityContext:
           capabilities:
             add: ["NET_ADMIN"]
-      nodeSelector:
-        app: control-plane
-      tolerations:
-      - key: "node-role.kubernetes.io/master"
-        operator: "Exists"
-        effect: "NoSchedule"
+      # nodeSelector:
+      #   app: control-plane
+      # tolerations:
+      # - key: "node-role.kubernetes.io/master"
+      #   operator: "Exists"
+      #   effect: "NoSchedule"
 ---
 apiVersion: v1
 kind: Pod
@@ -181,40 +145,10 @@ metadata:
 spec:
   containers:
   - name: web-client2-1
-    image: zyiou/iperf
+    image: projects.registry.vmware.com/antrea/perftool
     imagePullPolicy: IfNotPresent
-    command: ["iperf"]
-    args: ["-c", "10.96.0.133", "-p", "5201", "-t", "3000", "-b", "15M"]
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: web-client2-2
-  namespace: antrea-test-2
-  labels:
-    app: web-client-2
-spec:
-  containers:
-  - name: web-client2-2
-    image: zyiou/iperf
-    imagePullPolicy: IfNotPresent
-    command: ["iperf"]
-    args: ["-c", "10.96.0.133", "-p", "5201", "-t", "3000", "-b", "15M"]
-# ---
-# apiVersion: v1
-# kind: Pod
-# metadata:
-#   name: web-client2-3
-#   namespace: antrea-test-2
-#   labels:
-#     app: web-client-2
-# spec:
-#   containers:
-#   - name: web-client2-3
-#     image: zyiou/iperf
-#     imagePullPolicy: IfNotPresent
-#     command: ["iperf"]
-#     args: ["-c", "10.96.0.133", "-p", "5201", "-t", "3000", "-b", "15M"]
+    command: ["iperf3"]
+    args: ["-c", "10.96.0.133", "-t", "30000", "-b", "1.5M"]
 ---
 apiVersion: v1
 kind: Service
@@ -249,9 +183,9 @@ spec:
     spec:
       containers:
       - name: iperf-server-3
-        image: zyiou/iperf
+        image: projects.registry.vmware.com/antrea/perftool
         imagePullPolicy: IfNotPresent
-        command: ["iperf"]
+        command: ["iperf3"]
         args: ["-s", "-p", "5201"]
         ports:
         - containerPort: 5201
@@ -259,12 +193,6 @@ spec:
         securityContext:
           capabilities:
             add: ["NET_ADMIN"]
-      nodeSelector:
-        app: control-plane
-      tolerations:
-      - key: "node-role.kubernetes.io/master"
-        operator: "Exists"
-        effect: "NoSchedule"
 ---
 apiVersion: v1
 kind: Pod
@@ -276,40 +204,10 @@ metadata:
 spec:
   containers:
   - name: web-client3-1
-    image: zyiou/iperf
+    image: projects.registry.vmware.com/antrea/perftool
     imagePullPolicy: IfNotPresent
-    command: ["iperf"]
-    args: ["-c", "10.96.0.134", "-p", "5201", "-t", "3000", "-b", "20M"]
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: web-client3-2
-  namespace: antrea-test-3
-  labels:
-    app: web-client-3
-spec:
-  containers:
-  - name: web-client3-2
-    image: zyiou/iperf
-    imagePullPolicy: IfNotPresent
-    command: ["iperf"]
-    args: ["-c", "10.96.0.134", "-p", "5201", "-t", "3000", "-b", "20M"]
-# ---
-# apiVersion: v1
-# kind: Pod
-# metadata:
-#   name: web-client3-3
-#   namespace: antrea-test-3
-#   labels:
-#     app: web-client-3
-# spec:
-#   containers:
-#   - name: web-client3-3
-#     image: zyiou/iperf
-#     imagePullPolicy: IfNotPresent
-#     command: ["iperf"]
-#     args: ["-c", "10.96.0.134", "-p", "5201", "-t", "3000", "-b", "20M"]
+    command: ["iperf3"]
+    args: ["-c", "10.96.0.134", "-t", "30000", "-b", "2M"]
 ---
 apiVersion: v1
 kind: Service
@@ -344,9 +242,9 @@ spec:
     spec:
       containers:
       - name: iperf-server-4
-        image: zyiou/iperf
+        image: projects.registry.vmware.com/antrea/perftool
         imagePullPolicy: IfNotPresent
-        command: ["iperf"]
+        command: ["iperf3"]
         args: ["-s", "-p", "5201"]
         ports:
         - containerPort: 5201
@@ -354,12 +252,12 @@ spec:
         securityContext:
           capabilities:
             add: ["NET_ADMIN"]
-      nodeSelector:
-        app: control-plane
-      tolerations:
-      - key: "node-role.kubernetes.io/master"
-        operator: "Exists"
-        effect: "NoSchedule"
+      # nodeSelector:
+      #   app: control-plane
+      # tolerations:
+      # - key: "node-role.kubernetes.io/master"
+      #   operator: "Exists"
+      #   effect: "NoSchedule"
 ---
 apiVersion: v1
 kind: Pod
@@ -371,10 +269,11 @@ metadata:
 spec:
   containers:
   - name: web-client4-1
-    image: zyiou/iperf
+    image: projects.registry.vmware.com/antrea/perftool
     imagePullPolicy: IfNotPresent
-    command: ["iperf"]
-    args: ["-c", "10.96.0.135", "-p", "5201", "-t", "3000", "-b", "10M"]
+    command: ["iperf3"]
+    args: ["-c", "10.96.0.135", "-t", "30000", "-b", "1.2M"]
+
 ---
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1

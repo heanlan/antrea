@@ -1,0 +1,173 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app: antrea-test
+  name: antrea-test
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: alpine0
+  namespace: antrea-test
+  labels:
+    app: alpine0
+spec:
+  containers:
+  - name: alpine
+    image: busybox42/alpine-pod:latest
+    imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: alpine1
+  namespace: antrea-test
+  labels:
+    app: alpine1
+spec:
+  containers:
+  - name: alpine
+    image: busybox42/alpine-pod:latest
+    imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: alpine2
+  namespace: antrea-test
+  labels:
+    app: alpine2
+spec:
+  containers:
+  - name: alpine
+    image: busybox42/alpine-pod:latest
+    imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: alpine3
+  namespace: antrea-test
+  labels:
+    app: alpine3
+spec:
+  containers:
+  - name: alpine
+    image: busybox42/alpine-pod:latest
+    imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: alpine4
+  namespace: antrea-test
+  labels:
+    app: alpine4
+spec:
+  containers:
+  - name: alpine
+    image: busybox42/alpine-pod:latest
+    imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: alpine5
+  namespace: antrea-test
+  labels:
+    app: alpine5
+spec:
+  containers:
+  - name: alpine
+    image: busybox42/alpine-pod:latest
+    imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: alpine6
+  namespace: antrea-test
+  labels:
+    app: alpine6
+spec:
+  containers:
+  - name: alpine
+    image: busybox42/alpine-pod:latest
+    imagePullPolicy: IfNotPresent
+---
+apiVersion: crd.antrea.io/v1alpha1
+kind: ClusterNetworkPolicy
+metadata:
+  name: test-ingress-allow
+spec:
+  priority: 3
+  tier: securityops
+  appliedTo:
+    - podSelector:
+        matchLabels:
+          app: alpine6
+  ingress:
+    - action: Allow
+      name: allow-3-4
+      from:
+        - podSelector:
+            matchLabels:
+              app: alpine3
+        - podSelector:
+            matchLabels:
+              app: alpine4
+---
+apiVersion: crd.antrea.io/v1alpha1
+kind: ClusterNetworkPolicy
+metadata:
+  name: test-egress-allow
+spec:
+  priority: 3
+  tier: securityops
+  appliedTo:
+    - podSelector:
+        matchLabels:
+          app: alpine0
+  egress:
+    - action: Allow
+      name: allow-3-4
+      to:
+        - podSelector:
+            matchLabels:
+              app: alpine3
+        - podSelector:
+            matchLabels:
+              app: alpine4
+---
+apiVersion: crd.antrea.io/v1alpha1
+kind: ClusterNetworkPolicy
+metadata:
+  name: alpine-deny
+spec:
+  priority: 1
+  tier: securityops
+  appliedTo:
+    - podSelector:
+        matchLabels:
+          app: alpine1
+  ingress:
+    - action: Drop
+      name: drop-4-5
+      from:
+        - podSelector:
+            matchLabels:
+              app: alpine4
+        - podSelector:
+            matchLabels:
+              app: alpine5
+  egress:
+    - action: Drop
+      name: drop-3-4
+      to:
+        - podSelector:
+            matchLabels:
+              app: alpine3
+        - podSelector:
+            matchLabels:
+              app: alpine4
