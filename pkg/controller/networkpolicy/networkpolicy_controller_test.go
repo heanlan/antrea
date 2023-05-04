@@ -2953,7 +2953,7 @@ func TestSyncInternalNetworkPolicy(t *testing.T) {
 	expectedPolicy := &antreatypes.NetworkPolicy{
 		UID:      "uidA",
 		Name:     "uidA",
-		SpanMeta: antreatypes.SpanMeta{NodeNames: sets.NewString()},
+		SpanMeta: antreatypes.SpanMeta{NodeNames: sets.New[string]()},
 		SourceRef: &controlplane.NetworkPolicyReference{
 			Type: controlplane.AntreaClusterNetworkPolicy,
 			Name: "cnpA",
@@ -2998,10 +2998,10 @@ func TestSyncInternalNetworkPolicy(t *testing.T) {
 
 	// Set AppliedToGroups' span, the internal NetworkPolicy should be union of them.
 	appliedToGroupA, _, _ := c.appliedToGroupStore.Get(selectorAGroup)
-	appliedToGroupA.(*antreatypes.AppliedToGroup).NodeNames = sets.NewString("nodeA", "nodeB")
+	appliedToGroupA.(*antreatypes.AppliedToGroup).NodeNames = sets.New[string]("nodeA", "nodeB")
 	appliedToGroupB, _, _ := c.appliedToGroupStore.Get(selectorBGroup)
-	appliedToGroupB.(*antreatypes.AppliedToGroup).NodeNames = sets.NewString("nodeB", "nodeC")
-	expectedPolicy.NodeNames = sets.NewString("nodeA", "nodeB", "nodeC")
+	appliedToGroupB.(*antreatypes.AppliedToGroup).NodeNames = sets.New[string]("nodeB", "nodeC")
+	expectedPolicy.NodeNames = sets.New[string]("nodeA", "nodeB", "nodeC")
 	assert.NoError(t, c.syncInternalNetworkPolicy(networkPolicyRef))
 	internalPolicies = c.internalNetworkPolicyStore.List()
 	require.Len(t, internalPolicies, 1)
@@ -3023,7 +3023,7 @@ func TestSyncInternalNetworkPolicy(t *testing.T) {
 	actualPolicy = internalPolicies[0].(*antreatypes.NetworkPolicy)
 	expectedPolicy.AppliedToGroups = []string{selectorCGroup, selectorBGroup}
 	expectedPolicy.Rules[0].From.AddressGroups = []string{selectorCGroup}
-	expectedPolicy.NodeNames = sets.NewString("nodeC", "nodeB")
+	expectedPolicy.NodeNames = sets.New[string]("nodeC", "nodeB")
 	assert.Equal(t, expectedPolicy, actualPolicy)
 	checkQueueItemExistence(t, c.addressGroupQueue, selectorCGroup, selectorBGroup, selectorAGroup)
 	// AddressGroup with selectA is no longer used, it should be deleted from the storage.
@@ -3076,7 +3076,7 @@ func TestSyncInternalNetworkPolicyConcurrently(t *testing.T) {
 	expectedPolicyA := &antreatypes.NetworkPolicy{
 		UID:      "uidA",
 		Name:     "uidA",
-		SpanMeta: antreatypes.SpanMeta{NodeNames: sets.NewString()},
+		SpanMeta: antreatypes.SpanMeta{NodeNames: sets.New[string]()},
 		SourceRef: &controlplane.NetworkPolicyReference{
 			Type:      controlplane.K8sNetworkPolicy,
 			Namespace: "default",
@@ -3096,7 +3096,7 @@ func TestSyncInternalNetworkPolicyConcurrently(t *testing.T) {
 	expectedPolicyB := &antreatypes.NetworkPolicy{
 		UID:      "uidB",
 		Name:     "uidB",
-		SpanMeta: antreatypes.SpanMeta{NodeNames: sets.NewString()},
+		SpanMeta: antreatypes.SpanMeta{NodeNames: sets.New[string]()},
 		SourceRef: &controlplane.NetworkPolicyReference{
 			Type:      controlplane.K8sNetworkPolicy,
 			Namespace: "default",
@@ -3200,7 +3200,7 @@ func TestSyncInternalNetworkPolicyWithGroups(t *testing.T) {
 			expectedPolicy: &antreatypes.NetworkPolicy{
 				UID:      "uidA",
 				Name:     "uidA",
-				SpanMeta: antreatypes.SpanMeta{NodeNames: sets.NewString("nodeA")},
+				SpanMeta: antreatypes.SpanMeta{NodeNames: sets.New[string]("nodeA")},
 				SourceRef: &controlplane.NetworkPolicyReference{
 					Type:      controlplane.AntreaNetworkPolicy,
 					Namespace: "nsA",
@@ -3249,7 +3249,7 @@ func TestSyncInternalNetworkPolicyWithGroups(t *testing.T) {
 			expectedPolicy: &antreatypes.NetworkPolicy{
 				UID:      "uidA",
 				Name:     "uidA",
-				SpanMeta: antreatypes.SpanMeta{NodeNames: sets.NewString("nodeA")},
+				SpanMeta: antreatypes.SpanMeta{NodeNames: sets.New[string]("nodeA")},
 				SourceRef: &controlplane.NetworkPolicyReference{
 					Type:      controlplane.AntreaNetworkPolicy,
 					Namespace: "nsA",
@@ -3498,8 +3498,8 @@ func TestSyncAppliedToGroupWithExternalEntity(t *testing.T) {
 
 func checkQueueItemExistence(t *testing.T, queue workqueue.RateLimitingInterface, items ...string) {
 	require.Equal(t, len(items), queue.Len())
-	expectedItems := sets.NewString(items...)
-	actualItems := sets.NewString()
+	expectedItems := sets.New[string](items...)
+	actualItems := sets.New[string]()
 	for i := 0; i < len(expectedItems); i++ {
 		key, _ := queue.Get()
 		actualItems.Insert(key.(string))

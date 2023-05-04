@@ -277,7 +277,7 @@ func (c *MCDefaultRouteController) syncMCFlowsForAllCIImps(activeGW *mcv1alpha1.
 	}
 
 	activeGWChanged := c.checkGatewayIPChange(activeGW)
-	installedCIImportNames := sets.StringKeySet(c.installedCIImports)
+	installedCIImportNames := sets.KeySet(c.installedCIImports)
 	for _, ciImp := range desiredCIImports {
 		if err = c.addMCFlowsForSingleCIImp(activeGW, ciImp, c.installedCIImports[ciImp.Name], activeGWChanged); err != nil {
 			return err
@@ -336,7 +336,7 @@ func (c *MCDefaultRouteController) addMCFlowsForSingleCIImp(activeGW *mcv1alpha1
 		oldTunnelPeerIPToRemoteGW := getPeerGatewayIP(installedCIImp.Spec)
 		ciImportNoChange = oldTunnelPeerIPToRemoteGW.Equal(tunnelPeerIPToRemoteGW) && installedCIImp.Spec.ServiceCIDR == ciImport.Spec.ServiceCIDR
 		if c.enablePodToPodConnectivity {
-			ciImportNoChange = ciImportNoChange && sets.NewString(installedCIImp.Spec.PodCIDRs...).Equal(sets.NewString(ciImport.Spec.PodCIDRs...))
+			ciImportNoChange = ciImportNoChange && sets.New[string](installedCIImp.Spec.PodCIDRs...).Equal(sets.New[string](ciImport.Spec.PodCIDRs...))
 		}
 	}
 
