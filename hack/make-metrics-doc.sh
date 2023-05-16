@@ -140,4 +140,5 @@ if [ "$metrics_doc" == "" ]; then
 else
         sed -i '/^Below is a list of metrics, provided by the components and by 3rd parties.$/,$d' $metrics_doc
         fmt -w 80 -s <<< $formatted_metrics >> $metrics_doc
+        fmt -w 80 -s <<< $formatted_metrics
 fi
