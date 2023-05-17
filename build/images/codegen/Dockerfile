@@ -51,6 +51,8 @@ RUN go install k8s.io/code-generator/cmd/client-gen@kubernetes-$K8S_VERSION && \
     go install golang.org/x/tools/cmd/goimports@latest && \
     go install sigs.k8s.io/controller-tools/cmd/controller-gen@v0.9.0
 
+RUN mkdir -p /home/runner/.cache && chmod -R 777 /home/runner/.cache
+
 COPY --from=protoc /tmp/protoc/bin /usr/local/bin
 COPY --from=protoc /tmp/protoc/include /usr/local/include
 

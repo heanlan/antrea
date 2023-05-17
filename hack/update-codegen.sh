@@ -18,7 +18,7 @@ set -o errexit
 set -o pipefail
 
 ANTREA_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../" && pwd )"
-IMAGE_NAME="antrea/codegen:kubernetes-1.26.4"
+IMAGE_NAME="hanlan/codegen:kubernetes-1.26.4"
 
 function docker_run() {
   docker pull ${IMAGE_NAME}
@@ -27,6 +27,10 @@ function docker_run() {
 		-e GOPROXY=${GOPROXY} \
 		-w /go/src/antrea.io/antrea \
 		-v ${ANTREA_ROOT}:/go/src/antrea.io/antrea \
+		-u $(id -u):$(id -g) \
+		--volume="/etc/group:/etc/group:ro" \
+		--volume="/etc/passwd:/etc/passwd:ro" \
+		--volume="/etc/shadow:/etc/shadow:ro" \
 		"${IMAGE_NAME}" "$@"
 }
 
