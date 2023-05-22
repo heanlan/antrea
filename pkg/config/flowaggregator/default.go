@@ -33,7 +33,7 @@ const (
 	DefaultClickHouseDatabase       = "default"
 	DefaultClickHouseCommitInterval = "8s"
 	MinClickHouseCommitInterval     = 1 * time.Second
-	DefaultClickHouseDatabaseUrl    = "tcp://clickhouse-clickhouse.flow-visibility.svc:9000"
+	DefaultClickHouseDatabaseUrl    = "clickhouse-clickhouse.flow-visibility.svc:9000"
 
 	DefaultS3Region            = "us-west-2"
 	DefaultS3RecordFormat      = "CSV"

@@ -26,7 +26,7 @@ Kubernetes: `>= 1.16.0-0`
 | clickHouse.commitInterval | string | `"8s"` | CommitInterval is the periodical interval between batch commit of flow records to DB. Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h". |
 | clickHouse.compress | bool | `true` | Compress enables lz4 compression when committing flow records. |
 | clickHouse.connectionSecret | object | `{"password":"clickhouse_operator_password","username":"clickhouse_operator"}` | Credentials to connect to ClickHouse. They will be stored in a Secret. |
-| clickHouse.databaseURL | string | `"tcp://clickhouse-clickhouse.flow-visibility.svc:9000"` | DatabaseURL is the url to the database. TCP protocol is required. |
+| clickHouse.databaseURL | string | `"clickhouse-clickhouse.flow-visibility.svc:9000"` | DatabaseURL is the url to the database. Currently only TCP is supported. |
 | clickHouse.debug | bool | `false` | Debug enables debug logs from ClickHouse sql driver. |
 | clickHouse.enable | bool | `false` | Determine whether to enable exporting flow records to ClickHouse. |
 | flowAggregatorAddress | string | `""` | Provide an extra DNS name or IP address of flow aggregator for generating TLS certificate. |

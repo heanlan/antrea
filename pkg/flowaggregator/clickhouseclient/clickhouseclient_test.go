@@ -43,39 +43,6 @@ func init() {
 
 var fakeClusterUUID = uuid.New().String()
 
-func TestGetDataSourceName(t *testing.T) {
-	chInput := ClickHouseInput{
-		Username:       "username",
-		Password:       "password",
-		Database:       "default",
-		DatabaseURL:    "tcp://click-house-svc:9000",
-		Debug:          true,
-		Compress:       new(bool),
-		CommitInterval: 1 * time.Second,
-	}
-	*chInput.Compress = true
-	dsn := "tcp://click-house-svc:9000?username=username&password=password&database=default&debug=true&compress=true"
-
-	chInputInvalid := ClickHouseInput{}
-
-	testcases := []struct {
-		input       ClickHouseInput
-		expectedDSN string
-		expectedErr bool
-	}{
-		{chInput, dsn, false},
-		{chInputInvalid, "", true},
-	}
-
-	for _, tc := range testcases {
-		dsn, err := tc.input.GetDataSourceName()
-		if tc.expectedErr {
-			assert.Errorf(t, err, "ClickHouseInput %v unexpectedly returns no error when getting DSN", tc.input)
-		}
-		assert.Equal(t, tc.expectedDSN, dsn)
-	}
-}
-
 func TestCacheRecord(t *testing.T) {
 	ctrl := gomock.NewController(t)
 
@@ -284,10 +251,10 @@ func TestFlushCacheOnStop(t *testing.T) {
 	const commitInterval = time.Hour
 
 	chExportProc := ClickHouseExportProcess{
-		db:             db,
-		deque:          deque.New(),
-		queueSize:      maxQueueSize,
-		commitInterval: commitInterval,
+		db:        db,
+		config:    ClickHouseConfig{CommitInterval: commitInterval},
+		deque:     deque.New(),
+		queueSize: maxQueueSize,
 	}
 
 	recordRow := flowrecordtesting.PrepareTestFlowRecord()
@@ -319,10 +286,10 @@ func TestUpdateCH(t *testing.T) {
 	const commitInterval = 100 * time.Millisecond
 
 	chExportProc := ClickHouseExportProcess{
-		db:             db1,
-		deque:          deque.New(),
-		queueSize:      maxQueueSize,
-		commitInterval: commitInterval,
+		db:        db1,
+		config:    ClickHouseConfig{CommitInterval: commitInterval},
+		deque:     deque.New(),
+		queueSize: maxQueueSize,
 	}
 
 	recordRow := flowrecordtesting.PrepareTestFlowRecord()
@@ -351,7 +318,7 @@ func TestUpdateCH(t *testing.T) {
 	mock2.ExpectCommit()
 
 	t.Logf("Calling UpdateCH to update DB connection")
-	chExportProc.UpdateCH("", db2)
+	chExportProc.UpdateCH(ClickHouseConfig{CommitInterval: commitInterval}, db2)
 
 	func() {
 		chExportProc.dequeMutex.Lock()

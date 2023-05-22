@@ -45,8 +45,8 @@ flowCollector:
 clickHouse:
   # -- Determine whether to enable exporting flow records to ClickHouse.
   enable: false
-  # -- DatabaseURL is the url to the database. TCP protocol is required.
-  databaseURL: "tcp://clickhouse-clickhouse.flow-visibility.svc:9000"
+  # -- DatabaseURL is the url to the database. Currently only TCP is supported.
+  databaseURL: "clickhouse-clickhouse.flow-visibility.svc:9000"
   # -- Debug enables debug logs from ClickHouse sql driver.
   debug: false
   # -- Compress enables lz4 compression when committing flow records.

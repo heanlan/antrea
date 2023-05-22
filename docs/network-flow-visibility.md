@@ -283,7 +283,7 @@ it is deployed following the [deployment steps](#deployment-steps-1), the
 ClickHouse server is already exposed via a K8s Service, and no further
 configuration is required. If a different FQDN or IP is desired, please use
 the URL for `clickHouse.databaseURL` in the following format:
-`tcp://<ClickHouse server FQDN or IP>:<ClickHouse TCP port>`.
+`<ClickHouse server FQDN or IP>:<ClickHouse TCP port>`.
 
 ```yaml
 flow-aggregator.conf: |  
@@ -357,8 +357,8 @@ flow-aggregator.conf: |
     # Database is the name of database where Antrea "flows" table is created.
     database: "default"
 
-    # DatabaseURL is the url to the database. TCP protocol is required.
-    databaseURL: "tcp://clickhouse-clickhouse.flow-visibility.svc:9000"
+    # DatabaseURL is the url to the database. Currently only TCP is supported.
+    databaseURL: "clickhouse-clickhouse.flow-visibility.svc:9000"
 
     # Debug enables debug logs from ClickHouse sql driver.
     debug: false

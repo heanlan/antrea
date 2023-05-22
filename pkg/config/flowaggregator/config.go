@@ -96,7 +96,7 @@ type ClickHouseConfig struct {
 	// Database is the name of database where Antrea "flows" table is created.
 	Database string `yaml:"database,omitempty"`
 	// DatabaseURL is the url to the database. TCP protocol is required.
-	// Defaults to "tcp://clickhouse-clickhouse.flow-visibility.svc:9000"
+	// Defaults to "clickhouse-clickhouse.flow-visibility.svc:9000"
 	DatabaseURL string `yaml:"databaseURL,omitempty"`
 	// Debug enables debug logs from ClickHouse sql driver. Defaults to false.
 	Debug bool `yaml:"debug,omitempty"`
